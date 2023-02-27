@@ -114,7 +114,7 @@ fixation_cross_cardinal = visual.ShapeStim(
     lineWidth=0.25,     colorSpace='rgb',  lineColor='grey', fillColor='grey',
     opacity=None, depth=0.0, interpolate=True)
 fixation_cross_rotated = visual.ShapeStim(
-    win=win, name='fixation_cross_cardinal', vertices='cross',units='deg', 
+    win=win, name='fixation_cross_rotated', vertices='cross',units='deg', 
     size=(1.0, 1.0),
     ori=45.0, pos=(0, 0), anchor='center',
     lineWidth=0.25,     colorSpace='rgb',  lineColor='grey', fillColor='grey',
@@ -127,18 +127,15 @@ fixation_dot = visual.ShapeStim(
     opacity=None, depth=0.0, interpolate=True)
 
 fixation_cardinal = [fixation_circle, fixation_cross_cardinal, fixation_dot]
-fixation_cardinal_names = ['fixation_circle', 'fixation_cross_cardinal', 'fixation_dot']
-
-print(fixation_dot.name)
+fixation_rotated = [fixation_circle, fixation_cross_rotated, fixation_dot]
 
 def draw_fixation(shapes,
-                  names,
                   tThisFlip,
                   frameN,
                   tThisFlipGlobal,
                   frameTolerance=frameTolerance,
                   win=win):
-    for idx, x in enumerate(shapes):
+    for _, x in enumerate(shapes):
         if x.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
             # keep track of start time/frame for later
             x.frameNStart = frameN  # exact frame index
@@ -146,7 +143,7 @@ def draw_fixation(shapes,
             x.tStartRefresh = tThisFlipGlobal  # on global time
             win.timeOnFlip(x, 'tStartRefresh')  # time at next scr refresh
             # add timestamp to datafile
-            thisExp.timestampOnFlip(win, names[idx] + '.started')
+            thisExp.timestampOnFlip(win, x.name + '.started')
             x.setAutoDraw(True)
 
 fixation_placeholder = keyboard.Keyboard()
@@ -430,7 +427,7 @@ for thisWaiting_trial in waiting_trials:
     fixation_placeholder.rt = []
     _fixation_placeholder_allKeys = []
     # keep track of which components have finished
-    fixateComponents = [fixation_circle, fixation_cross_cardinal, fixation_dot, fixation_placeholder]
+    fixateComponents = [fixation_placeholder] + fixation_cardinal
     for thisComponent in fixateComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -454,7 +451,6 @@ for thisWaiting_trial in waiting_trials:
         
         # *fixation* updates
         draw_fixation(fixation_cardinal, 
-                      fixation_cardinal_names,
                       tThisFlip,
                       frameN,
                       tThisFlipGlobal)
