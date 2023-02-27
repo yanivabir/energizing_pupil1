@@ -130,13 +130,14 @@ fixation_cardinal = [fixation_circle, fixation_cross_cardinal, fixation_dot]
 fixation_rotated = [fixation_circle, fixation_cross_rotated, fixation_dot]
 
 def draw_fixation(shapes,
+                  when,
                   tThisFlip,
                   frameN,
                   tThisFlipGlobal,
                   frameTolerance=frameTolerance,
                   win=win):
     for _, x in enumerate(shapes):
-        if x.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
+        if x.status == NOT_STARTED and tThisFlip >= when-frameTolerance:
             # keep track of start time/frame for later
             x.frameNStart = frameN  # exact frame index
             x.tStart = t  # local t and not account for scr refresh
@@ -450,7 +451,8 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation* updates
-        draw_fixation(fixation_cardinal, 
+        draw_fixation(fixation_cardinal,
+                      0.7, 
                       tThisFlip,
                       frameN,
                       tThisFlipGlobal)
