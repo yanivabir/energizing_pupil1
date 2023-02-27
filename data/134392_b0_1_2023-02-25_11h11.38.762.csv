@@ -1,0 +1,4 @@
+﻿questionId,type,question_text,answer_text,question_file,answer_file,rating_trials.thisRepN,rating_trials.thisTrialN,rating_trials.thisN,rating_trials.thisIndex,text_instr.started,key_resp.started,key_resp.keys,key_resp.rt,text.started,slider.started,slider.response,slider.rt,participant,session,date,expName,psychopyVersion,frameRate,
+,,,,,,,,,,13.185792375006713,13.185792375006713,space,2.7821459309197962,,,,,134392,001,2023-02-25_11h11.38.762,b0_1,2022.2.5,None,
+GE_10,Geography,In which country is it most common for divers to be attacked by sharks?,United States,GE_02_q.ogg,GE_02_a.ogg,0,0,0,234,,,,,16.074872080003843,16.074872080003843,5.0,4.9421918370062485,134392,001,2023-02-25_11h11.38.762,b0_1,2022.2.5,None,
+,,,,,,,,,,,,,,20.99200314900372,20.99200314900372,,,,,,,,,

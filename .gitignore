@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Psychopy
+*lastrun*
+
+# Mac
+.DS_Store
+
+Icon
