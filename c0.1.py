@@ -130,12 +130,7 @@ fixation_cardinal = [fixation_circle, fixation_cross_cardinal, fixation_dot]
 fixation_rotated = [fixation_circle, fixation_cross_rotated, fixation_dot]
 
 def draw_fixation(shapes,
-                  when,
-                  tThisFlip,
-                  frameN,
-                  tThisFlipGlobal,
-                  frameTolerance=frameTolerance,
-                  win=win):
+                  when):
     for _, x in enumerate(shapes):
         if x.status == NOT_STARTED and tThisFlip >= when-frameTolerance:
             # keep track of start time/frame for later
@@ -148,12 +143,7 @@ def draw_fixation(shapes,
             x.setAutoDraw(True)
 
 def remove_fixation(shapes,
-                  when,
-                  tThisFlip,
-                  frameN,
-                  tThisFlipGlobal,
-                  frameTolerance=frameTolerance,
-                  win=win):
+                  when):
         for _, x in enumerate(shapes):
             if x.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
@@ -471,10 +461,7 @@ for thisWaiting_trial in waiting_trials:
         
         # *fixation* updates
         draw_fixation(fixation_cardinal,
-                      0.7, 
-                      tThisFlip,
-                      frameN,
-                      tThisFlipGlobal)
+                      0.7)
                     
         # *fixation_placeholder* updates
         waitOnFlip = False
@@ -571,15 +558,9 @@ for thisWaiting_trial in waiting_trials:
         
         # *fixation_prepare* updates
         draw_fixation(fixation_rotated,
-                      0.0, 
-                      tThisFlip,
-                      frameN,
-                      tThisFlipGlobal)
+                      0.0)
         remove_fixation(fixation_rotated,
-                      2.0, 
-                      tThisFlip,
-                      frameN,
-                      tThisFlipGlobal)
+                      2.0)
         
         # *fixation_question* updates
         if fixation_question.status == NOT_STARTED and tThisFlip >= 2.0-frameTolerance:
