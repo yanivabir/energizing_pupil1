@@ -147,6 +147,25 @@ def draw_fixation(shapes,
             thisExp.timestampOnFlip(win, x.name + '.started')
             x.setAutoDraw(True)
 
+def remove_fixation(shapes,
+                  when,
+                  tThisFlip,
+                  frameN,
+                  tThisFlipGlobal,
+                  frameTolerance=frameTolerance,
+                  win=win):
+        for _, x in enumerate(shapes):
+            if x.status == STARTED:
+            # is it time to stop? (based on global clock, using actual start)
+                if tThisFlipGlobal > x.tStartRefresh + when-frameTolerance:
+                    # keep track of stop time/frame for later
+                    x.tStop = t  # not accounting for scr refresh
+                    x.frameNStop = frameN  # exact frame index
+                    # add timestamp to datafile
+                    thisExp.timestampOnFlip(win, x.name + '.stopped')
+                    x.setAutoDraw(False)
+
+
 fixation_placeholder = keyboard.Keyboard()
 
 # --- Initialize components for Routine "question" ---
@@ -528,7 +547,7 @@ for thisWaiting_trial in waiting_trials:
     choice.rt = []
     _choice_allKeys = []
     # keep track of which components have finished
-    questionComponents = [fixation_prepare, fixation_question, static_prepare, question_voice, duration_voice, choice]
+    questionComponents = [fixation_question, static_prepare, question_voice, duration_voice, choice] + fixation_rotated
     for thisComponent in questionComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -551,24 +570,16 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation_prepare* updates
-        if fixation_prepare.status == NOT_STARTED and tThisFlip >= 0-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_prepare.frameNStart = frameN  # exact frame index
-            fixation_prepare.tStart = t  # local t and not account for scr refresh
-            fixation_prepare.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_prepare, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_prepare.started')
-            fixation_prepare.setAutoDraw(True)
-        if fixation_prepare.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > fixation_prepare.tStartRefresh + 2.0-frameTolerance:
-                # keep track of stop time/frame for later
-                fixation_prepare.tStop = t  # not accounting for scr refresh
-                fixation_prepare.frameNStop = frameN  # exact frame index
-                # add timestamp to datafile
-                thisExp.timestampOnFlip(win, 'fixation_prepare.stopped')
-                fixation_prepare.setAutoDraw(False)
+        draw_fixation(fixation_rotated,
+                      0.0, 
+                      tThisFlip,
+                      frameN,
+                      tThisFlipGlobal)
+        remove_fixation(fixation_rotated,
+                      2.0, 
+                      tThisFlip,
+                      frameN,
+                      tThisFlipGlobal)
         
         # *fixation_question* updates
         if fixation_question.status == NOT_STARTED and tThisFlip >= 2.0-frameTolerance:
