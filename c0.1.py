@@ -124,13 +124,18 @@ fixation_dot = visual.ShapeStim(
     size=(0.18, 0.18), vertices='circle',
     ori=0.0, pos=(0, 0), anchor='center',
     lineWidth=0.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
-    opacity=None, depth=0.0, interpolate=True)
+    opacity=None, depth=-1.0, interpolate=True)
 
 fixation_cardinal = [fixation_circle, fixation_cross_cardinal, fixation_dot]
 fixation_rotated = [fixation_circle, fixation_cross_rotated, fixation_dot]
 
-def draw_fixation(shapes,
+def draw_fixation(ori,
                   when):
+    if ori == 0.0:
+        shapes = [fixation_circle, fixation_cross_cardinal, fixation_dot]
+    else:
+        shapes = [fixation_circle, fixation_cross_rotated, fixation_dot]
+
     for _, x in enumerate(shapes):
         if x.status == NOT_STARTED and tThisFlip >= when-frameTolerance:
             # keep track of start time/frame for later
@@ -142,35 +147,40 @@ def draw_fixation(shapes,
             thisExp.timestampOnFlip(win, x.name + '.started')
             x.setAutoDraw(True)
 
-def remove_fixation(shapes,
+def rotate_fixation(ori,
                   when):
-        for _, x in enumerate(shapes):
-            if x.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-                if tThisFlipGlobal > x.tStartRefresh + when-frameTolerance:
-                    # keep track of stop time/frame for later
-                    x.tStop = t  # not accounting for scr refresh
-                    x.frameNStop = frameN  # exact frame index
-                    # add timestamp to datafile
-                    thisExp.timestampOnFlip(win, x.name + '.stopped')
-                    x.setAutoDraw(False)
+        if ori == 0.0:
+            o = fixation_cross_rotated
+            n = fixation_cross_cardinal
+        else:
+            n = fixation_cross_rotated
+            o = fixation_cross_cardinal
+
+        
+        print(o.status)
+        if (n.status == NOT_STARTED or n.status == FINISHED) and tThisFlip >= when-frameTolerance:
+            # keep track of start time/frame for later
+            n.frameNStart = frameN  # exact frame index
+            n.tStart = t  # local t and not account for scr refresh
+            n.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(n, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, n.name+'.started')
+            n.setAutoDraw(True)
+        if o.status == STARTED:
+            # is it time to stop? (based on local clock)
+            if tThisFlip >  when-frameTolerance:
+                # keep track of stop time/frame for later
+                o.tStop = t  # not accounting for scr refresh
+                o.frameNStop = frameN  # exact frame index
+                # add timestamp to datafile
+                thisExp.timestampOnFlip(win, o.name + '.stopped')
+                o.setAutoDraw(False)
 
 
 fixation_placeholder = keyboard.Keyboard()
 
 # --- Initialize components for Routine "question" ---
-fixation_prepare = visual.ShapeStim(
-    win=win, name='fixation_prepare', vertices='cross',units='deg', 
-    size=(1.0, 1.0),
-    ori=45.0, pos=(0, 0), anchor='center',
-    lineWidth=1.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
-    opacity=None, depth=-1.0, interpolate=True)
-fixation_question = visual.ShapeStim(
-    win=win, name='fixation_question', vertices='cross',units='deg', 
-    size=(1.0, 1.0),
-    ori=0.0, pos=(0, 0), anchor='center',
-    lineWidth=1.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
-    opacity=None, depth=-2.0, interpolate=True)
 static_prepare = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='static_prepare')
 question_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
     name='question_voice')
@@ -460,7 +470,7 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation* updates
-        draw_fixation(fixation_cardinal,
+        draw_fixation(0.0,
                       0.7)
                     
         # *fixation_placeholder* updates
@@ -534,7 +544,7 @@ for thisWaiting_trial in waiting_trials:
     choice.rt = []
     _choice_allKeys = []
     # keep track of which components have finished
-    questionComponents = [fixation_question, static_prepare, question_voice, duration_voice, choice] + fixation_rotated
+    questionComponents = [static_prepare, question_voice, duration_voice, choice, fixation_cross_cardinal] + fixation_rotated
     for thisComponent in questionComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -557,21 +567,12 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation_prepare* updates
-        draw_fixation(fixation_rotated,
-                      0.0)
-        remove_fixation(fixation_rotated,
-                      2.0)
+        draw_fixation(ori=45.0,
+                      when=0.0)
         
         # *fixation_question* updates
-        if fixation_question.status == NOT_STARTED and tThisFlip >= 2.0-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_question.frameNStart = frameN  # exact frame index
-            fixation_question.tStart = t  # local t and not account for scr refresh
-            fixation_question.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_question, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_question.started')
-            fixation_question.setAutoDraw(True)
+        rotate_fixation(ori=0.0,
+                      when=2.0)
         # start/stop question_voice
         if question_voice.status == NOT_STARTED and tThisFlip >= 2.0-frameTolerance:
             # keep track of start time/frame for later
