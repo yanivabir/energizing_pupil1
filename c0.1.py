@@ -422,39 +422,20 @@ for thisWaiting_trial in waiting_trials:
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
         
-        # *fixation_fixate_circle* updates
-        if fixation_fixate_circle.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_fixate_circle.frameNStart = frameN  # exact frame index
-            fixation_fixate_circle.tStart = t  # local t and not account for scr refresh
-            fixation_fixate_circle.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_fixate_circle, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_fixate_circle.started')
-            fixation_fixate_circle.setAutoDraw(True)
-        
-        # *fixation_fixate* updates
-        if fixation_fixate.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_fixate.frameNStart = frameN  # exact frame index
-            fixation_fixate.tStart = t  # local t and not account for scr refresh
-            fixation_fixate.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_fixate, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_fixate.started')
-            fixation_fixate.setAutoDraw(True)
-        
-        # *fixation_fixate_dot* updates
-        if fixation_fixate_dot.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_fixate_dot.frameNStart = frameN  # exact frame index
-            fixation_fixate_dot.tStart = t  # local t and not account for scr refresh
-            fixation_fixate_dot.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_fixate_dot, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_fixate_dot.started')
-            fixation_fixate_dot.setAutoDraw(True)
-        
+        # *fixation* updates
+        fix_shapes = [fixation_fixate_circle, fixation_fixate, fixation_fixate_dot]
+        fix_names = ['fixation_circle', 'fixation_cross', 'fixation_dot']
+        for idx, x in enumerate(fix_shapes):
+            if x.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
+                # keep track of start time/frame for later
+                x.frameNStart = frameN  # exact frame index
+                x.tStart = t  # local t and not account for scr refresh
+                x.tStartRefresh = tThisFlipGlobal  # on global time
+                win.timeOnFlip(x, 'tStartRefresh')  # time at next scr refresh
+                # add timestamp to datafile
+                thisExp.timestampOnFlip(win, fix_names[idx] + '.started')
+                x.setAutoDraw(True)
+                    
         # *fixation_placeholder* updates
         waitOnFlip = False
         if fixation_placeholder.status == NOT_STARTED and tThisFlip >= 0.7 -frameTolerance:
