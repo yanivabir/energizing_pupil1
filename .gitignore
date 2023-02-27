@@ -130,8 +130,9 @@ dmypy.json
 
 # Psychopy
 *lastrun*
+/data
 
 # Mac
 .DS_Store
 
-Icon
+Icon
