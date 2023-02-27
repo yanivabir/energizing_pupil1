@@ -101,20 +101,26 @@ text_instr = visual.TextStim(win=win, name='text_instr',
 key_resp = keyboard.Keyboard()
 
 # --- Initialize components for Routine "fixate" ---
-fixation_fixate_circle = visual.ShapeStim(
-    win=win, name='fixation_fixate_circle',units='deg', 
+fixation_circle = visual.ShapeStim(
+    win=win, name='fixation_circle',units='deg', 
     size=(1.0, 1.0), vertices='circle',
     ori=0.0, pos=(0, 0), anchor='center',
     lineWidth=0.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
     opacity=None, depth=0.0, interpolate=True)
-fixation_fixate = visual.ShapeStim(
-    win=win, name='fixation_fixate', vertices='cross',units='deg', 
+fixation_cross_cardinal = visual.ShapeStim(
+    win=win, name='fixation_cross_cardinal', vertices='cross',units='deg', 
     size=(1.0, 1.0),
     ori=0.0, pos=(0, 0), anchor='center',
     lineWidth=0.25,     colorSpace='rgb',  lineColor='grey', fillColor='grey',
     opacity=None, depth=0.0, interpolate=True)
-fixation_fixate_dot = visual.ShapeStim(
-    win=win, name='fixation_fixate_dot',units='deg', 
+fixation_cross_rotated = visual.ShapeStim(
+    win=win, name='fixation_cross_cardinal', vertices='cross',units='deg', 
+    size=(1.0, 1.0),
+    ori=45.0, pos=(0, 0), anchor='center',
+    lineWidth=0.25,     colorSpace='rgb',  lineColor='grey', fillColor='grey',
+    opacity=None, depth=0.0, interpolate=True)
+fixation_dot = visual.ShapeStim(
+    win=win, name='fixation_dot',units='deg', 
     size=(0.18, 0.18), vertices='circle',
     ori=0.0, pos=(0, 0), anchor='center',
     lineWidth=0.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
@@ -400,7 +406,7 @@ for thisWaiting_trial in waiting_trials:
     fixation_placeholder.rt = []
     _fixation_placeholder_allKeys = []
     # keep track of which components have finished
-    fixateComponents = [fixation_fixate_circle, fixation_fixate, fixation_fixate_dot, fixation_placeholder]
+    fixateComponents = [fixation_circle, fixation_cross_cardinal, fixation_dot, fixation_placeholder]
     for thisComponent in fixateComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -423,8 +429,8 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation* updates
-        fix_shapes = [fixation_fixate_circle, fixation_fixate, fixation_fixate_dot]
-        fix_names = ['fixation_circle', 'fixation_cross', 'fixation_dot']
+        fix_shapes = [fixation_circle, fixation_cross_cardinal, fixation_dot]
+        fix_names = ['fixation_circle', 'fixation_cross_cardinal', 'fixation_dot']
         for idx, x in enumerate(fix_shapes):
             if x.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
                 # keep track of start time/frame for later
