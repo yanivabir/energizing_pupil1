@@ -94,7 +94,7 @@ defaultKeyboard = keyboard.Keyboard(backend='ptb')
 text_instr = visual.TextStim(win=win, name='text_instr',
     text="This is a template" + " \n on how to use" + "\n the text component" + " \n to present instructions.",
     font='Arial',
-    pos=(-0.3, 0.25), height=0.04, wrapWidth=None, ori=0.0, 
+    pos=(0, 0), height=0.04, wrapWidth=None, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     depth=0.0);
