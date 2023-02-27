@@ -112,7 +112,7 @@ fixation_fixate = visual.ShapeStim(
     size=(1.0, 1.0),
     ori=0.0, pos=(0, 0), anchor='center',
     lineWidth=0.25,     colorSpace='rgb',  lineColor='grey', fillColor='grey',
-    opacity=None, depth=-1.0, interpolate=True)
+    opacity=None, depth=0.0, interpolate=True)
 fixation_fixate_dot = visual.ShapeStim(
     win=win, name='fixation_fixate_dot',units='deg', 
     size=(0.18, 0.18), vertices='circle',
