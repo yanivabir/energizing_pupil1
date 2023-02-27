@@ -125,6 +125,30 @@ fixation_dot = visual.ShapeStim(
     ori=0.0, pos=(0, 0), anchor='center',
     lineWidth=0.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
     opacity=None, depth=0.0, interpolate=True)
+
+fixation_cardinal = [fixation_circle, fixation_cross_cardinal, fixation_dot]
+fixation_cardinal_names = ['fixation_circle', 'fixation_cross_cardinal', 'fixation_dot']
+
+print(fixation_dot.name)
+
+def draw_fixation(shapes,
+                  names,
+                  tThisFlip,
+                  frameN,
+                  tThisFlipGlobal,
+                  frameTolerance=frameTolerance,
+                  win=win):
+    for idx, x in enumerate(shapes):
+        if x.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
+            # keep track of start time/frame for later
+            x.frameNStart = frameN  # exact frame index
+            x.tStart = t  # local t and not account for scr refresh
+            x.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(x, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, names[idx] + '.started')
+            x.setAutoDraw(True)
+
 fixation_placeholder = keyboard.Keyboard()
 
 # --- Initialize components for Routine "question" ---
@@ -429,18 +453,11 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation* updates
-        fix_shapes = [fixation_circle, fixation_cross_cardinal, fixation_dot]
-        fix_names = ['fixation_circle', 'fixation_cross_cardinal', 'fixation_dot']
-        for idx, x in enumerate(fix_shapes):
-            if x.status == NOT_STARTED and tThisFlip >= 0.7-frameTolerance:
-                # keep track of start time/frame for later
-                x.frameNStart = frameN  # exact frame index
-                x.tStart = t  # local t and not account for scr refresh
-                x.tStartRefresh = tThisFlipGlobal  # on global time
-                win.timeOnFlip(x, 'tStartRefresh')  # time at next scr refresh
-                # add timestamp to datafile
-                thisExp.timestampOnFlip(win, fix_names[idx] + '.started')
-                x.setAutoDraw(True)
+        draw_fixation(fixation_cardinal, 
+                      fixation_cardinal_names,
+                      tThisFlip,
+                      frameN,
+                      tThisFlipGlobal)
                     
         # *fixation_placeholder* updates
         waitOnFlip = False
