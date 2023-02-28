@@ -1,2 +1,10 @@
 # energizing_pupil1
-code for energizing pupillometry experiment
+Code for energizing pupillometry experiment
+
+To do:
+- [ ] Allocate items to rating, waiting 
+- [ ] Instructions
+- [ ] Demographics
+- [x] Timing
+- [ ] ET
+- [ ] Sound
