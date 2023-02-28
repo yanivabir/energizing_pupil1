@@ -126,9 +126,6 @@ fixation_dot = visual.ShapeStim(
     lineWidth=0.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
     opacity=None, depth=-1.0, interpolate=True)
 
-fixation_cardinal = [fixation_circle, fixation_cross_cardinal, fixation_dot]
-fixation_rotated = [fixation_circle, fixation_cross_rotated, fixation_dot]
-
 def draw_fixation(ori,
                   when):
     if ori == 0.0:
@@ -157,7 +154,6 @@ def rotate_fixation(ori,
             o = fixation_cross_cardinal
 
         
-        print(o.status)
         if (n.status == NOT_STARTED or n.status == FINISHED) and tThisFlip >= when-frameTolerance:
             # keep track of start time/frame for later
             n.frameNStart = frameN  # exact frame index
@@ -167,6 +163,10 @@ def rotate_fixation(ori,
             # add timestamp to datafile
             thisExp.timestampOnFlip(win, n.name+'.started')
             n.setAutoDraw(True)
+            
+            # Reset timers for circle and dot
+            # fixation_circle.tStartRefresh = tThisFlipGlobal # on global time
+            # fixation_dot.tStartRefresh = tThisFlipGlobal # on global timev
         if o.status == STARTED:
             # is it time to stop? (based on local clock)
             if tThisFlip >  when-frameTolerance:
@@ -176,6 +176,8 @@ def rotate_fixation(ori,
                 # add timestamp to datafile
                 thisExp.timestampOnFlip(win, o.name + '.stopped')
                 o.setAutoDraw(False)
+
+                
 
 
 fixation_placeholder = keyboard.Keyboard()
@@ -191,27 +193,9 @@ duration_voice.setVolume(1.0)
 choice = keyboard.Keyboard()
 
 # --- Initialize components for Routine "answer" ---
-fixation_wait = visual.ShapeStim(
-    win=win, name='fixation_wait', vertices='cross',units='deg', 
-    size=(1.0, 1.0),
-    ori=45.0, pos=(0, 0), anchor='center',
-    lineWidth=1.0,     colorSpace='rgb',  lineColor='green', fillColor='green',
-    opacity=None, depth=-1.0, interpolate=True)
-fixation_answer = visual.ShapeStim(
-    win=win, name='fixation_answer', vertices='cross',units='deg', 
-    size=(1.0, 1.0),
-    ori=0.0, pos=(0, 0), anchor='center',
-    lineWidth=1.0,     colorSpace='rgb',  lineColor='red', fillColor='red',
-    opacity=None, depth=-2.0, interpolate=True)
 answer_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
     name='answer_voice')
 answer_voice.setVolume(1.0)
-fixation_satisfaction = visual.ShapeStim(
-    win=win, name='fixation_satisfaction', vertices='cross',units='deg', 
-    size=(1.0, 1.0),
-    ori=45.0, pos=(0, 0), anchor='center',
-    lineWidth=1.0,     colorSpace='rgb',  lineColor='blue', fillColor='blue',
-    opacity=None, depth=-4.0, interpolate=True)
 mic = sound.microphone.Microphone(
     device=None, channels=None, 
     sampleRateHz=48000, maxRecordingSize=24000.0
@@ -447,7 +431,7 @@ for thisWaiting_trial in waiting_trials:
     fixation_placeholder.rt = []
     _fixation_placeholder_allKeys = []
     # keep track of which components have finished
-    fixateComponents = [fixation_placeholder] + fixation_cardinal
+    fixateComponents = [fixation_placeholder, fixation_cross_cardinal, fixation_dot, fixation_circle]
     for thisComponent in fixateComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -544,7 +528,8 @@ for thisWaiting_trial in waiting_trials:
     choice.rt = []
     _choice_allKeys = []
     # keep track of which components have finished
-    questionComponents = [static_prepare, question_voice, duration_voice, choice, fixation_cross_cardinal] + fixation_rotated
+    questionComponents = [static_prepare, question_voice, duration_voice, choice, 
+                          fixation_cross_cardinal, fixation_dot, fixation_circle, fixation_cross_rotated] 
     for thisComponent in questionComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -676,7 +661,8 @@ for thisWaiting_trial in waiting_trials:
     answer_voice.setSound('./stimuli/' + answer_file, hamming=True)
     answer_voice.setVolume(1.0, log=False)
     # keep track of which components have finished
-    answerComponents = [fixation_wait, fixation_answer, answer_voice, fixation_satisfaction, mic, static_wait]
+    answerComponents = [answer_voice, mic, static_wait, 
+                        fixation_cross_cardinal, fixation_dot, fixation_circle, fixation_cross_rotated]
     for thisComponent in answerComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -699,44 +685,11 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation_wait* updates
-        if fixation_wait.status == NOT_STARTED and tThisFlip >= 0-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_wait.frameNStart = frameN  # exact frame index
-            fixation_wait.tStart = t  # local t and not account for scr refresh
-            fixation_wait.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_wait, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_wait.started')
-            fixation_wait.setAutoDraw(True)
-        if fixation_wait.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > fixation_wait.tStartRefresh + thisTrialDuration-frameTolerance:
-                # keep track of stop time/frame for later
-                fixation_wait.tStop = t  # not accounting for scr refresh
-                fixation_wait.frameNStop = frameN  # exact frame index
-                # add timestamp to datafile
-                thisExp.timestampOnFlip(win, 'fixation_wait.stopped')
-                fixation_wait.setAutoDraw(False)
-        
+        draw_fixation(45.0, 0.0)
+        print(thisTrialDuration)
         # *fixation_answer* updates
-        if fixation_answer.status == NOT_STARTED and tThisFlip >= thisTrialDuration-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_answer.frameNStart = frameN  # exact frame index
-            fixation_answer.tStart = t  # local t and not account for scr refresh
-            fixation_answer.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_answer, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_answer.started')
-            fixation_answer.setAutoDraw(True)
-        if fixation_answer.status == STARTED:
-            # is it time to stop? (based on local clock)
-            if tThisFlip > thisTrialDuration + answer_voice.duration-frameTolerance:
-                # keep track of stop time/frame for later
-                fixation_answer.tStop = t  # not accounting for scr refresh
-                fixation_answer.frameNStop = frameN  # exact frame index
-                # add timestamp to datafile
-                thisExp.timestampOnFlip(win, 'fixation_answer.stopped')
-                fixation_answer.setAutoDraw(False)
+        rotate_fixation(0.0, thisTrialDuration)
+
         # start/stop answer_voice
         if answer_voice.status == NOT_STARTED and tThisFlip >= thisTrialDuration-frameTolerance:
             # keep track of start time/frame for later
@@ -748,24 +701,21 @@ for thisWaiting_trial in waiting_trials:
             answer_voice.play(when=win)  # sync with win flip
         
         # *fixation_satisfaction* updates
-        if fixation_satisfaction.status == NOT_STARTED and tThisFlip >= thisTrialDuration + answer_voice.duration-frameTolerance:
-            # keep track of start time/frame for later
-            fixation_satisfaction.frameNStart = frameN  # exact frame index
-            fixation_satisfaction.tStart = t  # local t and not account for scr refresh
-            fixation_satisfaction.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_satisfaction, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_satisfaction.started')
-            fixation_satisfaction.setAutoDraw(True)
-        if fixation_satisfaction.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > fixation_satisfaction.tStartRefresh + 3.0-frameTolerance:
-                # keep track of stop time/frame for later
-                fixation_satisfaction.tStop = t  # not accounting for scr refresh
-                fixation_satisfaction.frameNStop = frameN  # exact frame index
-                # add timestamp to datafile
-                thisExp.timestampOnFlip(win, 'fixation_satisfaction.stopped')
-                fixation_satisfaction.setAutoDraw(False)
+        rotate_fixation(45.0, thisTrialDuration + answer_voice.duration)
+
+        for x in [fixation_circle, fixation_cross_rotated, fixation_cross_cardinal, fixation_dot]:
+            if x.status == STARTED:
+                print(x.name)
+                print(x.tStartRefresh)
+                # is it time to stop? (based on global clock, using actual start)
+                if tThisFlip > thisTrialDuration + answer_voice.duration + 3.0-frameTolerance:
+                    # keep track of stop time/frame for later
+                    x.tStop = t  # not accounting for scr refresh
+                    x.frameNStop = frameN  # exact frame index
+                    # add timestamp to datafile
+                    thisExp.timestampOnFlip(win, x.name + '.stopped')
+                    x.setAutoDraw(False)
+                    x.status = FINISHED
         
         # mic updates
         if mic.status == NOT_STARTED and t >= thisTrialDuration + answer_voice.duration-frameTolerance:
