@@ -28,7 +28,11 @@ import sys  # to get file system encoding
 
 from psychopy.hardware import keyboard
 
-
+# Parameters
+ITI = 3.0
+prepare_duration = 3.0
+post_question_gap = 0.2
+satisfaction_duration  =  3.0
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -455,11 +459,11 @@ for thisWaiting_trial in waiting_trials:
         
         # *fixation* updates
         draw_fixation(0.0,
-                      0.7)
+                      ITI)
                     
         # *fixation_placeholder* updates
         waitOnFlip = False
-        if fixation_placeholder.status == NOT_STARTED and tThisFlip >= 0.7 -frameTolerance:
+        if fixation_placeholder.status == NOT_STARTED and tThisFlip >= ITI -frameTolerance:
             # keep track of start time/frame for later
             fixation_placeholder.frameNStart = frameN  # exact frame index
             fixation_placeholder.tStart = t  # local t and not account for scr refresh
@@ -557,9 +561,9 @@ for thisWaiting_trial in waiting_trials:
         
         # *fixation_question* updates
         rotate_fixation(ori=0.0,
-                      when=2.0)
+                      when=prepare_duration)
         # start/stop question_voice
-        if question_voice.status == NOT_STARTED and tThisFlip >= 2.0-frameTolerance:
+        if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration-frameTolerance:
             # keep track of start time/frame for later
             question_voice.frameNStart = frameN  # exact frame index
             question_voice.tStart = t  # local t and not account for scr refresh
@@ -568,7 +572,8 @@ for thisWaiting_trial in waiting_trials:
             thisExp.addData('question_voice.started', tThisFlipGlobal)
             question_voice.play(when=win)  # sync with win flip
         # start/stop duration_voice
-        if duration_voice.status == NOT_STARTED and tThisFlip >= 2.0 + question_voice.duration + 0.2-frameTolerance:
+        if duration_voice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration +
+                                                                  post_question_gap -frameTolerance):
             # keep track of start time/frame for later
             duration_voice.frameNStart = frameN  # exact frame index
             duration_voice.tStart = t  # local t and not account for scr refresh
@@ -579,7 +584,8 @@ for thisWaiting_trial in waiting_trials:
         
         # *choice* updates
         waitOnFlip = False
-        if choice.status == NOT_STARTED and tThisFlip >= 2.0 + question_voice.duration + duration_voice.duration / 2-frameTolerance:
+        if choice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration + 
+                                                          post_question_gap + duration_voice.duration / 2-frameTolerance):
             # keep track of start time/frame for later
             choice.frameNStart = frameN  # exact frame index
             choice.tStart = t  # local t and not account for scr refresh
@@ -616,7 +622,7 @@ for thisWaiting_trial in waiting_trials:
             duration_voice.setSound('stimuli/' + str(thisTrialDuration) + 's.ogg', secs=-1)
             # Component updates done
             static_prepare.complete()  # finish the static period
-            static_prepare.tStop = static_prepare.tStart + 2  # record stop time
+            static_prepare.tStop = static_prepare.tStart + prepare_duration  # record stop time
         
         # check for quit (typically the Esc key)
         if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
@@ -686,7 +692,6 @@ for thisWaiting_trial in waiting_trials:
         
         # *fixation_wait* updates
         draw_fixation(45.0, 0.0)
-        print(thisTrialDuration)
         # *fixation_answer* updates
         rotate_fixation(0.0, thisTrialDuration)
 
@@ -705,10 +710,8 @@ for thisWaiting_trial in waiting_trials:
 
         for x in [fixation_circle, fixation_cross_rotated, fixation_cross_cardinal, fixation_dot]:
             if x.status == STARTED:
-                print(x.name)
-                print(x.tStartRefresh)
                 # is it time to stop? (based on global clock, using actual start)
-                if tThisFlip > thisTrialDuration + answer_voice.duration + 3.0-frameTolerance:
+                if tThisFlip > thisTrialDuration + answer_voice.duration + satisfaction_duration-frameTolerance:
                     # keep track of stop time/frame for later
                     x.tStop = t  # not accounting for scr refresh
                     x.frameNStop = frameN  # exact frame index
@@ -734,7 +737,7 @@ for thisWaiting_trial in waiting_trials:
             mic.poll()
         if mic.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > mic.tStartRefresh + 3.0-frameTolerance:
+            if tThisFlipGlobal > mic.tStartRefresh + satisfaction_duration-frameTolerance:
                 # keep track of stop time/frame for later
                 mic.tStop = t  # not accounting for scr refresh
                 mic.frameNStop = frameN  # exact frame index
