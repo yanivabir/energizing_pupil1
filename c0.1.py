@@ -34,6 +34,7 @@ prepare_duration = 3.0
 post_question_gap = 0.2
 satisfaction_duration  =  3.0
 minimal_answer_epoch = 2.2
+waiting_task_duration = 1*60 #40*60
 
 n_for_ratings = 32
 n_questions_per_category = 75 # This must match file
@@ -441,13 +442,19 @@ if thisWaiting_trial != None:
     for paramName in thisWaiting_trial:
         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
+waiting_task_start = win.getFutureFlipTime(clock=None)
 for thisWaiting_trial in waiting_trials:
     currentLoop = waiting_trials
     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
     if thisWaiting_trial != None:
         for paramName in thisWaiting_trial:
             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
-    
+
+    # Check for total time
+    if win.getFutureFlipTime(clock=None) > waiting_task_start + waiting_task_duration:
+        logging.data("Waiting task over after %0.2f seconds" %(waiting_task_start + waiting_task_duration))
+        break
+
     # --- Prepare to start Routine "fixate" ---
     continueRoutine = True
     routineForceEnded = False

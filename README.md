@@ -6,6 +6,7 @@ To do:
 - [ ] Instructions
 - [ ] Demographics
 - [x] Timing
-- [ ] Max time
+- [x] Max time
 - [x] ET
 - [ ] Sound
+- [ ] Rating task formattting and ITI
