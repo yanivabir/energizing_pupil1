@@ -2,11 +2,13 @@
 Code for energizing pupillometry experiment
 
 To do:
-- [ ] Allocate items to rating, waiting 
+- [x] Allocate items to rating, waiting 
 - [ ] Instructions
-- [ ] Demographics
+- [x] Demographics
 - [x] Timing
 - [x] Max time
 - [x] ET
 - [ ] Sound
 - [ ] Rating task formattting and ITI
+- [ ] Mouse visibility
+- [ ] Transcription
