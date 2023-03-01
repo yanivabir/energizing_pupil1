@@ -6,5 +6,6 @@ To do:
 - [ ] Instructions
 - [ ] Demographics
 - [x] Timing
-- [ ] ET
+- [ ] Max time
+- [x] ET
 - [ ] Sound
