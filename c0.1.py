@@ -33,6 +33,7 @@ ITI = 3.0
 prepare_duration = 3.0
 post_question_gap = 0.2
 satisfaction_duration  =  3.0
+minimal_answer_epoch = 2.2
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -704,14 +705,17 @@ for thisWaiting_trial in waiting_trials:
             # add timestamp to datafile
             thisExp.addData('answer_voice.started', tThisFlipGlobal)
             answer_voice.play(when=win)  # sync with win flip
+
+        # Make sure answer epoch is not too short
+        answer_epoch = max(answer_voice.duration, minimal_answer_epoch)
         
         # *fixation_satisfaction* updates
-        rotate_fixation(45.0, thisTrialDuration + answer_voice.duration)
+        rotate_fixation(45.0, thisTrialDuration + answer_epoch)
 
         for x in [fixation_circle, fixation_cross_rotated, fixation_cross_cardinal, fixation_dot]:
             if x.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
-                if tThisFlip > thisTrialDuration + answer_voice.duration + satisfaction_duration-frameTolerance:
+                if tThisFlip > thisTrialDuration + answer_epoch + satisfaction_duration-frameTolerance:
                     # keep track of stop time/frame for later
                     x.tStop = t  # not accounting for scr refresh
                     x.frameNStop = frameN  # exact frame index
@@ -721,7 +725,7 @@ for thisWaiting_trial in waiting_trials:
                     x.status = FINISHED
         
         # mic updates
-        if mic.status == NOT_STARTED and t >= thisTrialDuration + answer_voice.duration-frameTolerance:
+        if mic.status == NOT_STARTED and t >= thisTrialDuration + answer_epoch-frameTolerance:
             # keep track of start time/frame for later
             mic.frameNStart = frameN  # exact frame index
             mic.tStart = t  # local t and not account for scr refresh
