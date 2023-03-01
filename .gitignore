@@ -132,7 +132,10 @@ dmypy.json
 *lastrun*
 /data
 
+experiment-server*
+
 # Mac
 .DS_Store
 
 Icon
+
