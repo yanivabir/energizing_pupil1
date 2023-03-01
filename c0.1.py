@@ -35,6 +35,26 @@ post_question_gap = 0.2
 satisfaction_duration  =  3.0
 minimal_answer_epoch = 2.2
 
+n_for_ratings = 32
+n_questions_per_category = 75 # This must match file
+n_categories = 4 # Must match file!
+
+# Draw questions for rating
+assert n_for_ratings % n_categories == 0
+
+question_list = data.importConditions('stimuli/questions.csv')
+n_questions_total = n_questions_per_category * n_categories
+assert len(question_list) == n_questions_total
+
+rating_idx = [i for c in range(n_categories) for i in randint(low=n_questions_per_category*c, 
+                     high=n_questions_per_category*(c+1), 
+                     size=n_for_ratings//n_categories)]
+
+waiting_idx = [i for i in range(n_questions_total) if i not in rating_idx]
+
+rating_questions = [question_list[i] for i in rating_idx]
+waiting_questions = [question_list[i] for i in waiting_idx]
+
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
@@ -412,7 +432,7 @@ routineTimer.reset()
 # set up handler to look after randomisation of conditions etc
 waiting_trials = data.TrialHandler(nReps=1.0, method='random', 
     extraInfo=expInfo, originPath=-1,
-    trialList=data.importConditions('stimuli/questions.csv'),
+    trialList=waiting_questions,
     seed=None, name='waiting_trials')
 thisExp.addLoop(waiting_trials)  # add the loop to the experiment
 thisWaiting_trial = waiting_trials.trialList[0]  # so we can initialise stimuli with some values
@@ -809,7 +829,7 @@ for thisWaiting_trial in waiting_trials:
 # set up handler to look after randomisation of conditions etc
 rating_trials = data.TrialHandler(nReps=1.0, method='random', 
     extraInfo=expInfo, originPath=-1,
-    trialList=data.importConditions('stimuli/questions.csv'),
+    trialList=rating_questions,
     seed=None, name='rating_trials')
 thisExp.addLoop(rating_trials)  # add the loop to the experiment
 thisRating_trial = rating_trials.trialList[0]  # so we can initialise stimuli with some values
