@@ -227,31 +227,7 @@ mic = sound.microphone.Microphone(
 )
 static_wait = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='static_wait')
 
-# --- Initialize components for Routine "rating" ---
-text = visual.TextStim(win=win, name='text',
-    text='',
-    font='Arial',
-    pos=(0, 0), height=0.05, wrapWidth=None, ori=0.0, 
-    color='white', colorSpace='rgb', opacity=None, 
-    languageStyle='LTR',
-    depth=0.0);
-slider = visual.Slider(win=win, name='slider',
-    startValue=None, size=(12.0, 1.0), pos=(0, -3.4), units='deg',
-    labels=("Know", "1", "2", "3", "4", "5"), ticks=(0, 1, 2, 3, 4, 5), granularity=1.0,
-    style='rating', styleTweaks=(), opacity=None,
-    labelColor='LightGray', markerColor='Red', lineColor='White', colorSpace='rgb',
-    font='Open Sans', labelHeight=1.0,
-    flip=False, ori=0.0, depth=-1, readOnly=False)
-
-
-mouse = event.Mouse(win=win)
-x, y = [None, None]
-mouse.mouseClock = core.Clock()
-
-# Create some handy timers
-globalClock = core.Clock()  # to track the time since experiment started
-routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
-
+# --- Functions for calling routines "fixate", "question", "answer" ---
 # Start trial, wait for fixation
 def run_fixate():
     # --- Prepare to start Routine "fixate" ---
@@ -633,6 +609,31 @@ def run_answer():
     # the Routine "answer" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
     thisExp.nextEntry()
+
+# --- Initialize components for Routine "rating" ---
+text = visual.TextStim(win=win, name='text',
+    text='',
+    font='Arial',
+    pos=(0, 0), height=0.05, wrapWidth=None, ori=0.0, 
+    color='white', colorSpace='rgb', opacity=None, 
+    languageStyle='LTR',
+    depth=0.0);
+slider = visual.Slider(win=win, name='slider',
+    startValue=None, size=(12.0, 1.0), pos=(0, -3.4), units='deg',
+    labels=("Know", "1", "2", "3", "4", "5"), ticks=(0, 1, 2, 3, 4, 5), granularity=1.0,
+    style='rating', styleTweaks=(), opacity=None,
+    labelColor='LightGray', markerColor='Red', lineColor='White', colorSpace='rgb',
+    font='Open Sans', labelHeight=1.0,
+    flip=False, ori=0.0, depth=-1, readOnly=False)
+
+
+mouse = event.Mouse(win=win)
+x, y = [None, None]
+mouse.mouseClock = core.Clock()
+
+# Create some handy timers
+globalClock = core.Clock()  # to track the time since experiment started
+routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 
 # --- Prepare to start Routine "waiting_instructions" ---
