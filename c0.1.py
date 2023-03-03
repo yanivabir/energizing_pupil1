@@ -153,12 +153,12 @@ fixation_dot = visual.ShapeStim(
     opacity=None, depth=-1.0, interpolate=True)
 
 def draw_fixation(ori,
-                  when):
+                  when,
+                  tThisFlip):
     if ori == 0.0:
         shapes = [fixation_circle, fixation_cross_cardinal, fixation_dot]
     else:
         shapes = [fixation_circle, fixation_cross_rotated, fixation_dot]
-
     for _, x in enumerate(shapes):
         if x.status == NOT_STARTED and tThisFlip >= when-frameTolerance:
             # keep track of start time/frame for later
@@ -169,6 +169,7 @@ def draw_fixation(ori,
             # add timestamp to datafile
             thisExp.timestampOnFlip(win, x.name + '.started')
             x.setAutoDraw(True)
+            
 
 def rotate_fixation(ori,
                   when):
@@ -241,6 +242,7 @@ slider = visual.Slider(win=win, name='slider',
     font='Open Sans', labelHeight=1.0,
     flip=False, ori=0.0, depth=-1, readOnly=False)
 
+
 mouse = event.Mouse(win=win)
 x, y = [None, None]
 mouse.mouseClock = core.Clock()
@@ -248,6 +250,97 @@ mouse.mouseClock = core.Clock()
 # Create some handy timers
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
+
+def run_fixate():
+    # --- Prepare to start Routine "fixate" ---
+    continueRoutine = True
+    routineForceEnded = False
+    # update component parameters for each repeat
+    fixation_placeholder.keys = []
+    fixation_placeholder.rt = []
+    _fixation_placeholder_allKeys = []
+    # keep track of which components have finished
+    fixateComponents = [fixation_placeholder, fixation_cross_cardinal, fixation_dot, fixation_circle]
+    for thisComponent in fixateComponents:
+        thisComponent.tStart = None
+        thisComponent.tStop = None
+        thisComponent.tStartRefresh = None
+        thisComponent.tStopRefresh = None
+        if hasattr(thisComponent, 'status'):
+            thisComponent.status = NOT_STARTED
+    # reset timers
+    t = 0
+    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
+    frameN = -1
+    
+    # --- Run Routine "fixate" ---
+    while continueRoutine:
+        # get current time
+        t = routineTimer.getTime()
+        tThisFlip = win.getFutureFlipTime(clock=routineTimer)
+        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
+        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+        # update/draw components on each frame
+        
+        # *fixation* updates
+        draw_fixation(0.0,
+                      ITI,
+                      tThisFlip)
+                    
+        # *fixation_placeholder* updates
+        waitOnFlip = False
+        if fixation_placeholder.status == NOT_STARTED and tThisFlip >= ITI -frameTolerance:
+            # keep track of start time/frame for later
+            fixation_placeholder.frameNStart = frameN  # exact frame index
+            fixation_placeholder.tStart = t  # local t and not account for scr refresh
+            fixation_placeholder.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(fixation_placeholder, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'fixation_placeholder.started')
+            fixation_placeholder.status = STARTED
+            # keyboard checking is just starting
+            waitOnFlip = True
+            win.callOnFlip(fixation_placeholder.clock.reset)  # t=0 on next screen flip
+            win.callOnFlip(fixation_placeholder.clearEvents, eventType='keyboard')  # clear events on next screen flip
+        if fixation_placeholder.status == STARTED and not waitOnFlip:
+            theseKeys = fixation_placeholder.getKeys(keyList=['space'], waitRelease=False)
+            _fixation_placeholder_allKeys.extend(theseKeys)
+            if len(_fixation_placeholder_allKeys):
+                fixation_placeholder.keys = _fixation_placeholder_allKeys[-1].name  # just the last key pressed
+                fixation_placeholder.rt = _fixation_placeholder_allKeys[-1].rt
+                # a response ends the routine
+                continueRoutine = False
+        
+        # check for quit (typically the Esc key)
+        if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
+            core.quit()
+        
+        # check if all components have finished
+        if not continueRoutine:  # a component has requested a forced-end of Routine
+            routineForceEnded = True
+            break
+        continueRoutine = False  # will revert to True if at least one component still running
+        for thisComponent in fixateComponents:
+            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+                continueRoutine = True
+                break  # at least one component has not yet finished
+        
+        # refresh the screen
+        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+            win.flip()
+    
+    # --- Ending Routine "fixate" ---
+    for thisComponent in fixateComponents:
+        if hasattr(thisComponent, "setAutoDraw"):
+            thisComponent.setAutoDraw(False)
+    # check responses
+    if fixation_placeholder.keys in ['', [], None]:  # No response was made
+        fixation_placeholder.keys = None
+    waiting_trials.addData('fixation_placeholder.keys',fixation_placeholder.keys)
+    if fixation_placeholder.keys != None:  # we had a response
+        waiting_trials.addData('fixation_placeholder.rt', fixation_placeholder.rt)
+    # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset()
 
 # --- Prepare to start Routine "waiting_instructions" ---
 continueRoutine = True
@@ -371,94 +464,7 @@ for thisWaiting_trial in waiting_trials:
         logging.data("Waiting task over after %0.2f seconds" %(waiting_task_start + waiting_task_duration))
         break
 
-    # --- Prepare to start Routine "fixate" ---
-    continueRoutine = True
-    routineForceEnded = False
-    # update component parameters for each repeat
-    fixation_placeholder.keys = []
-    fixation_placeholder.rt = []
-    _fixation_placeholder_allKeys = []
-    # keep track of which components have finished
-    fixateComponents = [fixation_placeholder, fixation_cross_cardinal, fixation_dot, fixation_circle]
-    for thisComponent in fixateComponents:
-        thisComponent.tStart = None
-        thisComponent.tStop = None
-        thisComponent.tStartRefresh = None
-        thisComponent.tStopRefresh = None
-        if hasattr(thisComponent, 'status'):
-            thisComponent.status = NOT_STARTED
-    # reset timers
-    t = 0
-    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
-    frameN = -1
-    
-    # --- Run Routine "fixate" ---
-    while continueRoutine:
-        # get current time
-        t = routineTimer.getTime()
-        tThisFlip = win.getFutureFlipTime(clock=routineTimer)
-        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
-        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-        # update/draw components on each frame
-        
-        # *fixation* updates
-        draw_fixation(0.0,
-                      ITI)
-                    
-        # *fixation_placeholder* updates
-        waitOnFlip = False
-        if fixation_placeholder.status == NOT_STARTED and tThisFlip >= ITI -frameTolerance:
-            # keep track of start time/frame for later
-            fixation_placeholder.frameNStart = frameN  # exact frame index
-            fixation_placeholder.tStart = t  # local t and not account for scr refresh
-            fixation_placeholder.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_placeholder, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_placeholder.started')
-            fixation_placeholder.status = STARTED
-            # keyboard checking is just starting
-            waitOnFlip = True
-            win.callOnFlip(fixation_placeholder.clock.reset)  # t=0 on next screen flip
-            win.callOnFlip(fixation_placeholder.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        if fixation_placeholder.status == STARTED and not waitOnFlip:
-            theseKeys = fixation_placeholder.getKeys(keyList=['space'], waitRelease=False)
-            _fixation_placeholder_allKeys.extend(theseKeys)
-            if len(_fixation_placeholder_allKeys):
-                fixation_placeholder.keys = _fixation_placeholder_allKeys[-1].name  # just the last key pressed
-                fixation_placeholder.rt = _fixation_placeholder_allKeys[-1].rt
-                # a response ends the routine
-                continueRoutine = False
-        
-        # check for quit (typically the Esc key)
-        if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
-            core.quit()
-        
-        # check if all components have finished
-        if not continueRoutine:  # a component has requested a forced-end of Routine
-            routineForceEnded = True
-            break
-        continueRoutine = False  # will revert to True if at least one component still running
-        for thisComponent in fixateComponents:
-            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-                continueRoutine = True
-                break  # at least one component has not yet finished
-        
-        # refresh the screen
-        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-            win.flip()
-    
-    # --- Ending Routine "fixate" ---
-    for thisComponent in fixateComponents:
-        if hasattr(thisComponent, "setAutoDraw"):
-            thisComponent.setAutoDraw(False)
-    # check responses
-    if fixation_placeholder.keys in ['', [], None]:  # No response was made
-        fixation_placeholder.keys = None
-    waiting_trials.addData('fixation_placeholder.keys',fixation_placeholder.keys)
-    if fixation_placeholder.keys != None:  # we had a response
-        waiting_trials.addData('fixation_placeholder.rt', fixation_placeholder.rt)
-    # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
-    routineTimer.reset()
+    run_fixate()
     
     # --- Prepare to start Routine "question" ---
     continueRoutine = True
@@ -501,7 +507,8 @@ for thisWaiting_trial in waiting_trials:
         
         # *fixation_prepare* updates
         draw_fixation(ori=45.0,
-                      when=0.0)
+                      when=0.0,
+                      tThisFlip=tThisFlip)
         
         # *fixation_question* updates
         rotate_fixation(ori=0.0,
@@ -635,7 +642,7 @@ for thisWaiting_trial in waiting_trials:
         # update/draw components on each frame
         
         # *fixation_wait* updates
-        draw_fixation(45.0, 0.0)
+        draw_fixation(45.0, 0.0, tThisFlip=tThisFlip)
         # *fixation_answer* updates
         rotate_fixation(0.0, thisTrialDuration)
 
@@ -853,6 +860,238 @@ for thisRating_trial in rating_trials:
     
 # completed 1.0 repeats of 'rating_trials'
 
+
+# --- Prepare to start Routine "demog" ---
+continueRoutine = True
+routineForceEnded = False
+# update component parameters for each repeat
+respAge.reset()
+genderResp1.reset()
+genderResp2.reset()
+studentResp.reset()
+moodResp.reset()
+# setup some python lists for storing info about the mouse
+mouse.clicked_name = []
+gotValidClick = False  # until a click is received
+# keep track of which components have finished
+demogComponents = [age, respAge, gender, genderResp1, genderResp2, student, studentResp, mood, moodResp, nextButton, mouse]
+for thisComponent in demogComponents:
+    thisComponent.tStart = None
+    thisComponent.tStop = None
+    thisComponent.tStartRefresh = None
+    thisComponent.tStopRefresh = None
+    if hasattr(thisComponent, 'status'):
+        thisComponent.status = NOT_STARTED
+# reset timers
+t = 0
+_timeToFirstFrame = win.getFutureFlipTime(clock="now")
+frameN = -1
+
+# --- Run Routine "demog" ---
+while continueRoutine:
+    # get current time
+    t = routineTimer.getTime()
+    tThisFlip = win.getFutureFlipTime(clock=routineTimer)
+    tThisFlipGlobal = win.getFutureFlipTime(clock=None)
+    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+    # update/draw components on each frame
+    
+    # *age* updates
+    if age.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        age.frameNStart = frameN  # exact frame index
+        age.tStart = t  # local t and not account for scr refresh
+        age.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(age, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'age.started')
+        age.setAutoDraw(True)
+    
+    # *respAge* updates
+    if respAge.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        respAge.frameNStart = frameN  # exact frame index
+        respAge.tStart = t  # local t and not account for scr refresh
+        respAge.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(respAge, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'respAge.started')
+        respAge.setAutoDraw(True)
+    
+    # *gender* updates
+    if gender.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        gender.frameNStart = frameN  # exact frame index
+        gender.tStart = t  # local t and not account for scr refresh
+        gender.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(gender, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'gender.started')
+        gender.setAutoDraw(True)
+    
+    # *genderResp1* updates
+    if genderResp1.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        genderResp1.frameNStart = frameN  # exact frame index
+        genderResp1.tStart = t  # local t and not account for scr refresh
+        genderResp1.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(genderResp1, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'genderResp1.started')
+        genderResp1.setAutoDraw(True)
+    
+    # *genderResp2* updates
+    if genderResp2.status == NOT_STARTED and tThisFlip >= 0-frameTolerance:
+        # keep track of start time/frame for later
+        genderResp2.frameNStart = frameN  # exact frame index
+        genderResp2.tStart = t  # local t and not account for scr refresh
+        genderResp2.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(genderResp2, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'genderResp2.started')
+        genderResp2.setAutoDraw(True)
+    
+    # *student* updates
+    if student.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        student.frameNStart = frameN  # exact frame index
+        student.tStart = t  # local t and not account for scr refresh
+        student.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(student, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'student.started')
+        student.setAutoDraw(True)
+    
+    # *studentResp* updates
+    if studentResp.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        studentResp.frameNStart = frameN  # exact frame index
+        studentResp.tStart = t  # local t and not account for scr refresh
+        studentResp.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(studentResp, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'studentResp.started')
+        studentResp.setAutoDraw(True)
+    
+    # *mood* updates
+    if mood.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        mood.frameNStart = frameN  # exact frame index
+        mood.tStart = t  # local t and not account for scr refresh
+        mood.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(mood, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'mood.started')
+        mood.setAutoDraw(True)
+    
+    # *moodResp* updates
+    if moodResp.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        moodResp.frameNStart = frameN  # exact frame index
+        moodResp.tStart = t  # local t and not account for scr refresh
+        moodResp.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(moodResp, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'moodResp.started')
+        moodResp.setAutoDraw(True)
+    
+    # *nextButton* updates
+    if nextButton.status == NOT_STARTED and respAge.rating and genderResp1.rating and studentResp.rating and moodResp.rating:
+        # keep track of start time/frame for later
+        nextButton.frameNStart = frameN  # exact frame index
+        nextButton.tStart = t  # local t and not account for scr refresh
+        nextButton.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(nextButton, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.timestampOnFlip(win, 'nextButton.started')
+        nextButton.setAutoDraw(True)
+    # *mouse* updates
+    if mouse.status == NOT_STARTED and t >= 0.0-frameTolerance:
+        # keep track of start time/frame for later
+        mouse.frameNStart = frameN  # exact frame index
+        mouse.tStart = t  # local t and not account for scr refresh
+        mouse.tStartRefresh = tThisFlipGlobal  # on global time
+        win.timeOnFlip(mouse, 'tStartRefresh')  # time at next scr refresh
+        # add timestamp to datafile
+        thisExp.addData('mouse.started', t)
+        mouse.status = STARTED
+        mouse.mouseClock.reset()
+        prevButtonState = mouse.getPressed()  # if button is down already this ISN'T a new click
+    if mouse.status == STARTED:  # only update if started and not finished!
+        buttons = mouse.getPressed()
+        if buttons != prevButtonState:  # button state changed?
+            prevButtonState = buttons
+            if sum(buttons) > 0:  # state changed to a new click
+                # check if the mouse was inside our 'clickable' objects
+                gotValidClick = False
+                try:
+                    iter(nextButton)
+                    clickableList = nextButton
+                except:
+                    clickableList = [nextButton]
+                for obj in clickableList:
+                    if obj.contains(mouse):
+                        gotValidClick = True
+                        mouse.clicked_name.append(obj.name)
+                if gotValidClick:  
+                    continueRoutine = False  # abort routine on response
+    
+    # check for quit (typically the Esc key)
+    if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
+        core.quit()
+    
+    # check if all components have finished
+    if not continueRoutine:  # a component has requested a forced-end of Routine
+        routineForceEnded = True
+        break
+    continueRoutine = False  # will revert to True if at least one component still running
+    for thisComponent in demogComponents:
+        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+            continueRoutine = True
+            break  # at least one component has not yet finished
+    
+    # refresh the screen
+    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+        win.flip()
+
+# --- Ending Routine "demog" ---
+for thisComponent in demogComponents:
+    if hasattr(thisComponent, "setAutoDraw"):
+        thisComponent.setAutoDraw(False)
+thisExp.addData('respAge.response', respAge.getRating())
+thisExp.addData('respAge.rt', respAge.getRT())
+thisExp.addData('genderResp1.response', genderResp1.getRating())
+thisExp.addData('genderResp1.rt', genderResp1.getRT())
+thisExp.addData('genderResp2.text',genderResp2.text)
+thisExp.addData('studentResp.response', studentResp.getRating())
+thisExp.addData('studentResp.rt', studentResp.getRT())
+thisExp.addData('moodResp.response', moodResp.getRating())
+thisExp.addData('moodResp.rt', moodResp.getRT())
+# store data for thisExp (ExperimentHandler)
+x, y = mouse.getPos()
+buttons = mouse.getPressed()
+if sum(buttons):
+    # check if the mouse was inside our 'clickable' objects
+    gotValidClick = False
+    try:
+        iter(nextButton)
+        clickableList = nextButton
+    except:
+        clickableList = [nextButton]
+    for obj in clickableList:
+        if obj.contains(mouse):
+            gotValidClick = True
+            mouse.clicked_name.append(obj.name)
+thisExp.addData('mouse.x', x)
+thisExp.addData('mouse.y', y)
+thisExp.addData('mouse.leftButton', buttons[0])
+thisExp.addData('mouse.midButton', buttons[1])
+thisExp.addData('mouse.rightButton', buttons[2])
+if len(mouse.clicked_name):
+    thisExp.addData('mouse.clicked_name', mouse.clicked_name[0])
+thisExp.nextEntry()
+# the Routine "demog" was not non-slip safe, so reset the non-slip timer
+routineTimer.reset()
 # save mic recordings
 for tag in mic.clips:
     for i, clip in enumerate(mic.clips[tag]):
