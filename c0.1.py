@@ -172,7 +172,8 @@ def draw_fixation(ori,
             
 
 def rotate_fixation(ori,
-                  when):
+                  when,
+                  tThisFlip):
         if ori == 0.0:
             o = fixation_cross_rotated
             n = fixation_cross_cardinal
@@ -342,6 +343,148 @@ def run_fixate():
     # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
+def run_question():
+    # --- Prepare to start Routine "question" ---
+    continueRoutine = True
+    routineForceEnded = False
+    # update component parameters for each repeat
+    # Run 'Begin Routine' code from code
+    
+    question_voice.setSound('stimuli/' + question_file, hamming=True)
+    question_voice.setVolume(1.0, log=False)
+    duration_voice.setSound('stimuli/' + str(thisTrialDuration) + 's.ogg', hamming=True)
+    duration_voice.setVolume(1.0, log=False)
+    choice.keys = []
+    choice.rt = []
+    _choice_allKeys = []
+    # keep track of which components have finished
+    questionComponents = [static_prepare, question_voice, duration_voice, choice, 
+                          fixation_cross_cardinal, fixation_dot, fixation_circle, fixation_cross_rotated] 
+    for thisComponent in questionComponents:
+        thisComponent.tStart = None
+        thisComponent.tStop = None
+        thisComponent.tStartRefresh = None
+        thisComponent.tStopRefresh = None
+        if hasattr(thisComponent, 'status'):
+            thisComponent.status = NOT_STARTED
+    # reset timers
+    t = 0
+    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
+    frameN = -1
+    
+    # --- Run Routine "question" ---
+    while continueRoutine:
+        # get current time
+        t = routineTimer.getTime()
+        tThisFlip = win.getFutureFlipTime(clock=routineTimer)
+        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
+        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+        # update/draw components on each frame
+        
+        # *fixation_prepare* updates
+        draw_fixation(ori=45.0,
+                      when=0.0,
+                      tThisFlip=tThisFlip)
+        
+        # *fixation_question* updates
+        rotate_fixation(ori=0.0,
+                      when=prepare_duration,
+                      tThisFlip=tThisFlip)
+        # start/stop question_voice
+        if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration-frameTolerance:
+            # keep track of start time/frame for later
+            question_voice.frameNStart = frameN  # exact frame index
+            question_voice.tStart = t  # local t and not account for scr refresh
+            question_voice.tStartRefresh = tThisFlipGlobal  # on global time
+            # add timestamp to datafile
+            thisExp.addData('question_voice.started', tThisFlipGlobal)
+            question_voice.play(when=win)  # sync with win flip
+        # start/stop duration_voice
+        if duration_voice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration +
+                                                                  post_question_gap -frameTolerance):
+            # keep track of start time/frame for later
+            duration_voice.frameNStart = frameN  # exact frame index
+            duration_voice.tStart = t  # local t and not account for scr refresh
+            duration_voice.tStartRefresh = tThisFlipGlobal  # on global time
+            # add timestamp to datafile
+            thisExp.addData('duration_voice.started', tThisFlipGlobal)
+            duration_voice.play(when=win)  # sync with win flip
+        
+        # *choice* updates
+        waitOnFlip = False
+        if choice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration + 
+                                                          post_question_gap + duration_voice.duration / 2-frameTolerance):
+            # keep track of start time/frame for later
+            choice.frameNStart = frameN  # exact frame index
+            choice.tStart = t  # local t and not account for scr refresh
+            choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'choice.started')
+            choice.status = STARTED
+            # keyboard checking is just starting
+            waitOnFlip = True
+            win.callOnFlip(choice.clock.reset)  # t=0 on next screen flip
+            win.callOnFlip(choice.clearEvents, eventType='keyboard')  # clear events on next screen flip
+        if choice.status == STARTED and not waitOnFlip:
+            theseKeys = choice.getKeys(keyList=['d','g','j'], waitRelease=False)
+            _choice_allKeys.extend(theseKeys)
+            if len(_choice_allKeys):
+                choice.keys = _choice_allKeys[-1].name  # just the last key pressed
+                choice.rt = _choice_allKeys[-1].rt
+                # a response ends the routine
+                continueRoutine = False
+        # *static_prepare* period
+        if static_prepare.status == NOT_STARTED and t >= 0-frameTolerance:
+            # keep track of start time/frame for later
+            static_prepare.frameNStart = frameN  # exact frame index
+            static_prepare.tStart = t  # local t and not account for scr refresh
+            static_prepare.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(static_prepare, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.addData('static_prepare.started', t)
+            static_prepare.start(2)
+        elif static_prepare.status == STARTED:  # one frame should pass before updating params and completing
+            # Updating other components during *static_prepare*
+            question_voice.setSound('stimuli/' + question_file, secs=-1)
+            duration_voice.setSound('stimuli/' + str(thisTrialDuration) + 's.ogg', secs=-1)
+            # Component updates done
+            static_prepare.complete()  # finish the static period
+            static_prepare.tStop = static_prepare.tStart + prepare_duration  # record stop time
+        
+        # check for quit (typically the Esc key)
+        if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
+            core.quit()
+        
+        # check if all components have finished
+        if not continueRoutine:  # a component has requested a forced-end of Routine
+            routineForceEnded = True
+            break
+        continueRoutine = False  # will revert to True if at least one component still running
+        for thisComponent in questionComponents:
+            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+                continueRoutine = True
+                break  # at least one component has not yet finished
+        
+        # refresh the screen
+        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+            win.flip()
+    
+    # --- Ending Routine "question" ---
+    for thisComponent in questionComponents:
+        if hasattr(thisComponent, "setAutoDraw"):
+            thisComponent.setAutoDraw(False)
+    question_voice.stop()  # ensure sound has stopped at end of routine
+    duration_voice.stop()  # ensure sound has stopped at end of routine
+    # check responses
+    if choice.keys in ['', [], None]:  # No response was made
+        choice.keys = None
+    waiting_trials.addData('choice.keys',choice.keys)
+    if choice.keys != None:  # we had a response
+        waiting_trials.addData('choice.rt', choice.rt)
+    # the Routine "question" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset()
+
 # --- Prepare to start Routine "waiting_instructions" ---
 continueRoutine = True
 routineForceEnded = False
@@ -464,149 +607,13 @@ for thisWaiting_trial in waiting_trials:
         logging.data("Waiting task over after %0.2f seconds" %(waiting_task_start + waiting_task_duration))
         break
 
-    run_fixate()
-    
-    # --- Prepare to start Routine "question" ---
-    continueRoutine = True
-    routineForceEnded = False
-    # update component parameters for each repeat
-    # Run 'Begin Routine' code from code
+    # Draw wait duration for this trial
     thisTrialDuration = [3, 6, 9, 12][randint(0,4)]
     thisExp.addData('wait_duration', thisTrialDuration)
+
+    run_fixate()
     
-    question_voice.setSound('stimuli/' + question_file, hamming=True)
-    question_voice.setVolume(1.0, log=False)
-    duration_voice.setSound('stimuli/' + str(thisTrialDuration) + 's.ogg', hamming=True)
-    duration_voice.setVolume(1.0, log=False)
-    choice.keys = []
-    choice.rt = []
-    _choice_allKeys = []
-    # keep track of which components have finished
-    questionComponents = [static_prepare, question_voice, duration_voice, choice, 
-                          fixation_cross_cardinal, fixation_dot, fixation_circle, fixation_cross_rotated] 
-    for thisComponent in questionComponents:
-        thisComponent.tStart = None
-        thisComponent.tStop = None
-        thisComponent.tStartRefresh = None
-        thisComponent.tStopRefresh = None
-        if hasattr(thisComponent, 'status'):
-            thisComponent.status = NOT_STARTED
-    # reset timers
-    t = 0
-    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
-    frameN = -1
-    
-    # --- Run Routine "question" ---
-    while continueRoutine:
-        # get current time
-        t = routineTimer.getTime()
-        tThisFlip = win.getFutureFlipTime(clock=routineTimer)
-        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
-        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-        # update/draw components on each frame
-        
-        # *fixation_prepare* updates
-        draw_fixation(ori=45.0,
-                      when=0.0,
-                      tThisFlip=tThisFlip)
-        
-        # *fixation_question* updates
-        rotate_fixation(ori=0.0,
-                      when=prepare_duration)
-        # start/stop question_voice
-        if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration-frameTolerance:
-            # keep track of start time/frame for later
-            question_voice.frameNStart = frameN  # exact frame index
-            question_voice.tStart = t  # local t and not account for scr refresh
-            question_voice.tStartRefresh = tThisFlipGlobal  # on global time
-            # add timestamp to datafile
-            thisExp.addData('question_voice.started', tThisFlipGlobal)
-            question_voice.play(when=win)  # sync with win flip
-        # start/stop duration_voice
-        if duration_voice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration +
-                                                                  post_question_gap -frameTolerance):
-            # keep track of start time/frame for later
-            duration_voice.frameNStart = frameN  # exact frame index
-            duration_voice.tStart = t  # local t and not account for scr refresh
-            duration_voice.tStartRefresh = tThisFlipGlobal  # on global time
-            # add timestamp to datafile
-            thisExp.addData('duration_voice.started', tThisFlipGlobal)
-            duration_voice.play(when=win)  # sync with win flip
-        
-        # *choice* updates
-        waitOnFlip = False
-        if choice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration + 
-                                                          post_question_gap + duration_voice.duration / 2-frameTolerance):
-            # keep track of start time/frame for later
-            choice.frameNStart = frameN  # exact frame index
-            choice.tStart = t  # local t and not account for scr refresh
-            choice.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(choice, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'choice.started')
-            choice.status = STARTED
-            # keyboard checking is just starting
-            waitOnFlip = True
-            win.callOnFlip(choice.clock.reset)  # t=0 on next screen flip
-            win.callOnFlip(choice.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        if choice.status == STARTED and not waitOnFlip:
-            theseKeys = choice.getKeys(keyList=['d','g','j'], waitRelease=False)
-            _choice_allKeys.extend(theseKeys)
-            if len(_choice_allKeys):
-                choice.keys = _choice_allKeys[-1].name  # just the last key pressed
-                choice.rt = _choice_allKeys[-1].rt
-                # a response ends the routine
-                continueRoutine = False
-        # *static_prepare* period
-        if static_prepare.status == NOT_STARTED and t >= 0-frameTolerance:
-            # keep track of start time/frame for later
-            static_prepare.frameNStart = frameN  # exact frame index
-            static_prepare.tStart = t  # local t and not account for scr refresh
-            static_prepare.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(static_prepare, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.addData('static_prepare.started', t)
-            static_prepare.start(2)
-        elif static_prepare.status == STARTED:  # one frame should pass before updating params and completing
-            # Updating other components during *static_prepare*
-            question_voice.setSound('stimuli/' + question_file, secs=-1)
-            duration_voice.setSound('stimuli/' + str(thisTrialDuration) + 's.ogg', secs=-1)
-            # Component updates done
-            static_prepare.complete()  # finish the static period
-            static_prepare.tStop = static_prepare.tStart + prepare_duration  # record stop time
-        
-        # check for quit (typically the Esc key)
-        if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
-            core.quit()
-        
-        # check if all components have finished
-        if not continueRoutine:  # a component has requested a forced-end of Routine
-            routineForceEnded = True
-            break
-        continueRoutine = False  # will revert to True if at least one component still running
-        for thisComponent in questionComponents:
-            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-                continueRoutine = True
-                break  # at least one component has not yet finished
-        
-        # refresh the screen
-        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-            win.flip()
-    
-    # --- Ending Routine "question" ---
-    for thisComponent in questionComponents:
-        if hasattr(thisComponent, "setAutoDraw"):
-            thisComponent.setAutoDraw(False)
-    question_voice.stop()  # ensure sound has stopped at end of routine
-    duration_voice.stop()  # ensure sound has stopped at end of routine
-    # check responses
-    if choice.keys in ['', [], None]:  # No response was made
-        choice.keys = None
-    waiting_trials.addData('choice.keys',choice.keys)
-    if choice.keys != None:  # we had a response
-        waiting_trials.addData('choice.rt', choice.rt)
-    # the Routine "question" was not non-slip safe, so reset the non-slip timer
-    routineTimer.reset()
+    run_question()
     
     # --- Prepare to start Routine "answer" ---
     continueRoutine = True
@@ -644,7 +651,7 @@ for thisWaiting_trial in waiting_trials:
         # *fixation_wait* updates
         draw_fixation(45.0, 0.0, tThisFlip=tThisFlip)
         # *fixation_answer* updates
-        rotate_fixation(0.0, thisTrialDuration)
+        rotate_fixation(0.0, thisTrialDuration, tThisFlip=tThisFlip)
 
         # start/stop answer_voice
         if answer_voice.status == NOT_STARTED and tThisFlip >= thisTrialDuration-frameTolerance:
@@ -660,7 +667,7 @@ for thisWaiting_trial in waiting_trials:
         answer_epoch = max(answer_voice.duration, minimal_answer_epoch)
         
         # *fixation_satisfaction* updates
-        rotate_fixation(45.0, thisTrialDuration + answer_epoch)
+        rotate_fixation(45.0, thisTrialDuration + answer_epoch, tThisFlip=tThisFlip)
 
         for x in [fixation_circle, fixation_cross_rotated, fixation_cross_cardinal, fixation_dot]:
             if x.status == STARTED:
