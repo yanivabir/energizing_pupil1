@@ -252,6 +252,7 @@ mouse.mouseClock = core.Clock()
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
+# Start trial, wait for fixation
 def run_fixate():
     # --- Prepare to start Routine "fixate" ---
     continueRoutine = True
@@ -343,6 +344,7 @@ def run_fixate():
     # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
+# Play question, collect choice
 def run_question():
     # --- Prepare to start Routine "question" ---
     continueRoutine = True
@@ -485,6 +487,7 @@ def run_question():
     # the Routine "question" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
+# Play answer, collect satisfaction
 def run_answer():
         # --- Prepare to start Routine "answer" ---
     continueRoutine = True
