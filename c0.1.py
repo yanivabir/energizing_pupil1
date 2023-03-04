@@ -87,7 +87,21 @@ Refer to this diagram below to make sure you understand which key to press.
 """,
 """Press 'd' to continue."""],
 "fonts": ['Arial', 'Menlo', 'Arial'],
-"poss": [(0.0, 0.2), (0.0, 0.0), (0.0, -0.15)]}
+"poss": [(0.0, 0.2), (0.0, 0.0), (0.0, -0.15)]},
+{"text_page": """If you choose to wait for a question, you will be asked to rate if the answer was worth waiting for on as scale of 1 to 5. 
+If the answer was not worth the wait, it should be rated as 1. If it was extremely worth it, rate it as 5. Use numbers 2-4 for annything in between.
+
+Press 'd' to continue."""},
+{"text_page": """To rate the answer, please speak the number you choose ("one", "two", "three", "four", or "five") into the microphone.
+Please only use whole numbers, no fractions.
+
+Press 'd' to continue."""},
+{"text_page": f"""The task will continue for {int(waiting_task_duration / 60)} minutes. The task takes the same amount of time regardless of how many questions you choose to skip or wait for, so please base your decisions on how interested you are in learning the answers.
+
+Press 'd' to continue."""},
+{"text_page": """You will now complete a short practice to get comfortable with the task. Please use this time to get used to pressing the different buttons, to rating the answers out loud, and to the amount of time you have to respond to the different prompts.
+
+Press 'd' to start the practice."""}
 ]
 
 # Ensure that relative paths start from the same directory as this script
