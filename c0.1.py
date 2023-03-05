@@ -355,7 +355,10 @@ fixation_dot = visual.ShapeStim(
 
 def draw_fixation(ori,
                   when,
-                  tThisFlip):
+                  tThisFlip,
+                  frameN,
+                  t,
+                  tThisFlipGlobal):
     if ori == 0.0:
         shapes = [fixation_circle, fixation_cross_cardinal, fixation_dot]
     else:
@@ -374,7 +377,10 @@ def draw_fixation(ori,
 
 def rotate_fixation(ori,
                   when,
-                  tThisFlip):
+                  tThisFlip,
+                  frameN,
+                  t,
+                  tThisFlipGlobal):
         if ori == 0.0:
             o = fixation_cross_rotated
             n = fixation_cross_cardinal
@@ -464,7 +470,10 @@ def run_fixate():
         # *fixation* updates
         draw_fixation(0.0,
                       ITI,
-                      tThisFlip)
+                      tThisFlip,
+                      frameN,
+                      t,
+                      tThisFlipGlobal)
                     
         # *fixation_placeholder* updates
         waitOnFlip = False
@@ -561,14 +570,20 @@ def run_question():
         # update/draw components on each frame
         
         # *fixation_prepare* updates
-        draw_fixation(ori=45.0,
-                      when=0.0,
-                      tThisFlip=tThisFlip)
+        draw_fixation(45.0,
+                      0.0,
+                      tThisFlip,
+                      frameN,
+                      t,
+                      tThisFlipGlobal)
         
         # *fixation_question* updates
-        rotate_fixation(ori=0.0,
-                      when=prepare_duration,
-                      tThisFlip=tThisFlip)
+        rotate_fixation(0.0,
+                    prepare_duration,
+                    tThisFlip,
+                    frameN,
+                    t,
+                    tThisFlipGlobal)
         # start/stop question_voice
         if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration-frameTolerance:
             # keep track of start time/frame for later
@@ -700,9 +715,17 @@ def run_answer():
         # update/draw components on each frame
         
         # *fixation_wait* updates
-        draw_fixation(45.0, 0.0, tThisFlip=tThisFlip)
+        draw_fixation(45.0, 0.0, 
+                      tThisFlip, 
+                      frameN,
+                      t,
+                      tThisFlipGlobal)
         # *fixation_answer* updates
-        rotate_fixation(0.0, thisTrialDuration, tThisFlip=tThisFlip)
+        rotate_fixation(0.0, thisTrialDuration, 
+                        tThisFlip,
+                        frameN,
+                        t,
+                        tThisFlipGlobal)
 
         # start/stop answer_voice
         if answer_voice.status == NOT_STARTED and tThisFlip >= thisTrialDuration-frameTolerance:
@@ -718,7 +741,11 @@ def run_answer():
         answer_epoch = max(answer_voice.duration, minimal_answer_epoch)
         
         # *fixation_satisfaction* updates
-        rotate_fixation(45.0, thisTrialDuration + answer_epoch, tThisFlip=tThisFlip)
+        rotate_fixation(45.0, thisTrialDuration + answer_epoch, 
+                        tThisFlip,
+                        frameN,
+                        t,
+                        tThisFlipGlobal)
 
         for x in [fixation_circle, fixation_cross_rotated, fixation_cross_cardinal, fixation_dot]:
             if x.status == STARTED:
