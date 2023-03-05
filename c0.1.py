@@ -121,7 +121,8 @@ Try to keep your gaze on the target for the entire sequence: question, answer, a
 Press 'd' to continue."""},
     {"text_page": """You will now complete a short practice to get comfortable with directing your gaze and responding. 
 
-Please ring the bell now to call the experimenter."""}
+Please ring the bell now to call the experimenter.""",
+    "cont_key": "q"}
 ]
 
 # Ensure that relative paths start from the same directory as this script
@@ -234,6 +235,12 @@ def dispaly_instructions(instr_text, loop_name):
                 text_instr[i].text = thisInstr_trial["text_page"][i]
                 text_instr[i].font = thisInstr_trial["fonts"][i]
                 text_instr[i].pos = thisInstr_trial["poss"][i]
+
+        # Set key for continue to 'd', unless explicitly specified
+        if 'cont_key' in thisInstr_trial:
+            cont_key = thisInstr_trial['cont_key']
+        else:
+            cont_key = 'd'
             
         # reset timers
         t = 0
@@ -278,7 +285,7 @@ def dispaly_instructions(instr_text, loop_name):
                 win.callOnFlip(key_resp.clock.reset)  # t=0 on next screen flip
                 win.callOnFlip(key_resp.clearEvents, eventType='keyboard')  # clear events on next screen flip
             if key_resp.status == STARTED and not waitOnFlip:
-                theseKeys = key_resp.getKeys(keyList=['d'], waitRelease=False)
+                theseKeys = key_resp.getKeys(keyList=[cont_key], waitRelease=False)
                 _key_resp_allKeys.extend(theseKeys)
                 if len(_key_resp_allKeys):
                     key_resp.keys = _key_resp_allKeys[-1].name  # just the last key pressed
