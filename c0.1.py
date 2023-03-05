@@ -125,6 +125,14 @@ Please ring the bell now to call the experimenter.""",
     "cont_key": "q"}
 ]
 
+instr3_text = [
+    {"text_page": f"""You will now start work on the curiosity task.
+
+This part will be {int(waiting_task_duration / 60)} minutes long.
+    
+Press 'd' to begin the task. """}
+]
+
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
@@ -196,7 +204,7 @@ text_instr = [visual.TextStim(win=win, name=f'text_instr_{t}',
     antialias=True,
     depth=0.0) for t in range(instr_max_component)]
 
-def dispaly_instructions(instr_text, loop_name):
+def display_instructions(instr_text, loop_name):
     # set up handler to look after randomisation of conditions etc
     instr_trials = data.TrialHandler(nReps=1.0, method='sequential', 
         extraInfo=expInfo, originPath=-1,
@@ -864,10 +872,13 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-dispaly_instructions(instr1_text, "instr1_trials")
+display_instructions(instr1_text, "instr1_trials")
 
 # --- Second instruction loop ---
-dispaly_instructions(instr2_text, "instr2_trials")
+display_instructions(instr2_text, "instr2_trials")
+
+# --- Final message before waiting task ---
+display_instructions(instr3_text, "instr3_trials")
 
 # set up handler to look after randomisation of conditions etc
 waiting_trials = data.TrialHandler(nReps=1.0, method='random', 
