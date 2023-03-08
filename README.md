@@ -29,7 +29,7 @@ Please only use whole numbers, no fractions.
 
 - You will soon complete a short practice to get comfortable with the task. Please use this time to get used to pressing the different buttons, to rating the answers out loud, and to the amount of time you have to respond to the different prompts.
 
-[Three practice trials. Textual prompts dispalyed below fixation to direct pariticpant when and how to respond]
+[Four practice trials. Textual prompts dispalyed below fixation to direct pariticpant when and how to respond]
 
 - During this task, we will be recording your eyes using the camera in front of you. 
 For this purpose, we need you to always be looking at the target displayed at the center of the screen, unless you are taking a break.
