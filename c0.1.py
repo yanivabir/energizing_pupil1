@@ -36,25 +36,31 @@ satisfaction_duration  =  3.0
 minimal_answer_epoch = 2.2
 waiting_task_duration = 1*60 #40*60
 
-n_for_ratings = 32
-n_questions_per_category = 75 # This must match file
-n_categories = 4 # Must match file!
+n_for_ratings_per_category = 8
 
 # --- Draw questions for rating ---
-assert n_for_ratings % n_categories == 0
-
+# Import questios
 question_list = data.importConditions('stimuli/questions.csv')
-n_questions_total = n_questions_per_category * n_categories
-assert len(question_list) == n_questions_total
 
-rating_idx = [i for c in range(n_categories) for i in randint(low=n_questions_per_category*c, 
-                     high=n_questions_per_category*(c+1), 
-                     size=n_for_ratings//n_categories)]
+# Order by category
+categories = set([q["type"] for q in question_list])
+question_dict = {c:[q for q in question_list if q['type'] == c] for c in categories}
 
-waiting_idx = [i for i in range(n_questions_total) if i not in rating_idx]
+# Shuffle within each category
+for c in categories:
+    shuffle(question_dict[c])
 
-rating_questions = [question_list[i] for i in rating_idx]
-waiting_questions = [question_list[i] for i in waiting_idx]
+# Split to rating, practice, and main waiting
+rating_questions = []
+for c in categories:
+    rating_questions += question_dict[c][:n_for_ratings_per_category]
+
+practice1_questions = [question_dict[c][n_for_ratings_per_category] for c in categories]
+practice2_questions = [question_dict[c][n_for_ratings_per_category+1] for c in categories]
+
+waiting_questions = []
+for c in categories:
+    waiting_questions += question_dict[c][(n_for_ratings_per_category+2):]
 
 # --- Instructions ---
 instr1_text = [
