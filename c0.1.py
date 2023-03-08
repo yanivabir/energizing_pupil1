@@ -450,7 +450,7 @@ static_wait = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='s
 
 # --- Functions for calling routines "fixate", "question", "answer" ---
 # Start trial, wait for fixation
-def run_fixate():
+def run_fixate(block_trials):
     # --- Prepare to start Routine "fixate" ---
     continueRoutine = True
     routineForceEnded = False
@@ -538,14 +538,14 @@ def run_fixate():
     # check responses
     if fixation_placeholder.keys in ['', [], None]:  # No response was made
         fixation_placeholder.keys = None
-    waiting_trials.addData('fixation_placeholder.keys',fixation_placeholder.keys)
+    block_trials.addData('fixation_placeholder.keys',fixation_placeholder.keys)
     if fixation_placeholder.keys != None:  # we had a response
-        waiting_trials.addData('fixation_placeholder.rt', fixation_placeholder.rt)
+        block_trials.addData('fixation_placeholder.rt', fixation_placeholder.rt)
     # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
 # Play question, collect choice
-def run_question():
+def run_question(block_trials):
     # --- Prepare to start Routine "question" ---
     continueRoutine = True
     routineForceEnded = False
@@ -687,14 +687,14 @@ def run_question():
     # check responses
     if choice.keys in ['', [], None]:  # No response was made
         choice.keys = None
-    waiting_trials.addData('choice.keys',choice.keys)
+    block_trials.addData('choice.keys',choice.keys)
     if choice.keys != None:  # we had a response
-        waiting_trials.addData('choice.rt', choice.rt)
+        block_trials.addData('choice.rt', choice.rt)
     # the Routine "question" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
 # Play answer, collect satisfaction
-def run_answer():
+def run_answer(block_trials):
         # --- Prepare to start Routine "answer" ---
     continueRoutine = True
     routineForceEnded = False
@@ -847,7 +847,7 @@ def run_answer():
         tag=tag, transcribe='None',
         config=None
     )
-    waiting_trials.addData('mic.clip', os.path.join(micRecFolder, 'recording_mic_%s.wav' % tag))
+    block_trials.addData('mic.clip', os.path.join(micRecFolder, 'recording_mic_%s.wav' % tag))
     # the Routine "answer" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
     thisExp.nextEntry()
@@ -915,11 +915,11 @@ for thisWaiting_trial in waiting_trials:
     thisTrialDuration = [3, 6, 9, 12][randint(0,4)]
     thisExp.addData('wait_duration', thisTrialDuration)
 
-    run_fixate()
+    run_fixate(waiting_trials)
     
-    run_question()
+    run_question(waiting_trials)
     
-    run_answer()    
+    run_answer(waiting_trials)    
 # completed 1.0 repeats of 'waiting_trials'
 
 
