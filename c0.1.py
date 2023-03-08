@@ -35,6 +35,7 @@ prepare_duration = 3.0
 post_question_gap = 0.2
 satisfaction_duration  =  3.0
 minimal_answer_epoch = 2.2
+instructions_gap = 0.2
 waiting_task_duration = 1*60 #40*60
 wait_durations = [3, 6, 9, 12]
 
@@ -275,7 +276,7 @@ def display_instructions(instr_text, loop_name):
             
             # *text_instr* updates
             for i in range(num_text_components):
-                if text_instr[i].status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+                if text_instr[i].status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
                     # keep track of start time/frame for later
                     text_instr[i].frameNStart = frameN  # exact frame index
                     text_instr[i].tStart = t  # local t and not account for scr refresh
@@ -287,7 +288,7 @@ def display_instructions(instr_text, loop_name):
             
             # *key_resp* updates
             waitOnFlip = False
-            if key_resp.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            if key_resp.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
                 # keep track of start time/frame for later
                 key_resp.frameNStart = frameN  # exact frame index
                 key_resp.tStart = t  # local t and not account for scr refresh
