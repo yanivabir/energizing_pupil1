@@ -25,6 +25,7 @@ from numpy import (sin, cos, tan, log, log10, pi, average,
 from numpy.random import random, randint, normal, shuffle, choice as randchoice
 import os  # handy system and path functions
 import sys  # to get file system encoding
+import copy
 
 from psychopy.hardware import keyboard
 
@@ -35,6 +36,7 @@ post_question_gap = 0.2
 satisfaction_duration  =  3.0
 minimal_answer_epoch = 2.2
 waiting_task_duration = 1*60 #40*60
+wait_durations = [3, 6, 9, 12]
 
 n_for_ratings_per_category = 8
 
@@ -894,6 +896,10 @@ if thisWaiting_trial != None:
     for paramName in thisWaiting_trial:
         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
+# Sample durations w/o replacement
+this_block_durations = copy.copy(wait_durations)
+shuffle(this_block_durations)
+
 for thisWaiting_trial in practice1_trials:
     currentLoop = practice1_trials
     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
@@ -901,8 +907,8 @@ for thisWaiting_trial in practice1_trials:
         for paramName in thisWaiting_trial:
             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-    # Draw wait duration for this trial
-    thisTrialDuration = [3, 6, 9, 12][randint(0,4)]
+    # Sample durations w/o replacement
+    thisTrialDuration = this_block_durations.pop()
     thisExp.addData('wait_duration', thisTrialDuration)
     
     run_question(practice1_trials, ITI=ITI)
@@ -926,6 +932,10 @@ if thisWaiting_trial != None:
     for paramName in thisWaiting_trial:
         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
+# Sample durations w/o replacement
+this_block_durations = copy.copy(wait_durations)
+shuffle(this_block_durations)
+
 for thisWaiting_trial in practice2_trials:
     currentLoop = practice2_trials
     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
@@ -933,15 +943,15 @@ for thisWaiting_trial in practice2_trials:
         for paramName in thisWaiting_trial:
             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-    # Draw wait duration for this trial
-    thisTrialDuration = [3, 6, 9, 12][randint(0,4)]
+    # Sample durations w/o replacement
+    thisTrialDuration = this_block_durations.pop()
     thisExp.addData('wait_duration', thisTrialDuration)
 
-    run_fixate(waiting_trials)
+    run_fixate(practice2_trials)
     
-    run_question(waiting_trials)
+    run_question(practice2_trials)
     
-    run_answer(waiting_trials)    
+    run_answer(practice2_trials)    
 # completed 1.0 repeats of 'practice2_trials'
 
 
@@ -974,7 +984,7 @@ for thisWaiting_trial in waiting_trials:
         break
 
     # Draw wait duration for this trial
-    thisTrialDuration = [3, 6, 9, 12][randint(0,4)]
+    thisTrialDuration = wait_durations[randint(0,4)]
     thisExp.addData('wait_duration', thisTrialDuration)
 
     run_fixate(waiting_trials)
