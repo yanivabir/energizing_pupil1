@@ -389,8 +389,7 @@ def draw_fixation(ori,
             win.timeOnFlip(x, 'tStartRefresh')  # time at next scr refresh
             # add timestamp to datafile
             thisExp.timestampOnFlip(win, x.name + '.started')
-            x.setAutoDraw(True)
-            
+            x.setAutoDraw(True)           
 
 def rotate_fixation(ori,
                   when,
@@ -440,6 +439,17 @@ duration_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
     name='duration_voice')
 duration_voice.setVolume(1.0)
 choice = keyboard.Keyboard()
+
+choice_aid = visual.TextStim(win=win, name='choice_aid',
+    text = """WAIT              SKIP                KNOW""",
+    font='Arial',
+    alignText = 'center',
+    anchorHoriz = 'center',
+    pos=(0.02, -0.1), height=0.03, wrapWidth=None, ori=0.0, 
+    color='white', colorSpace='rgb', opacity=None, 
+    languageStyle='LTR',
+    antialias=True,
+    depth=0.0)
 
 # --- Initialize components for Routine "answer" ---
 answer_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
@@ -549,7 +559,8 @@ def run_fixate(block_trials):
 
 # Play question, collect choice
 def run_question(block_trials,
-                 ITI=0.0):
+                 ITI=0.0,
+                 display_choice_aid=False):
     # --- Prepare to start Routine "question" ---
     continueRoutine = True
     routineForceEnded = False
@@ -565,7 +576,7 @@ def run_question(block_trials,
     _choice_allKeys = []
     # keep track of which components have finished
     questionComponents = [static_prepare, question_voice, duration_voice, choice, 
-                          fixation_cross_cardinal, fixation_dot, fixation_circle, fixation_cross_rotated] 
+                          fixation_cross_cardinal, fixation_dot, fixation_circle, fixation_cross_rotated, choice_aid] 
     for thisComponent in questionComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -622,6 +633,19 @@ def run_question(block_trials,
             thisExp.addData('duration_voice.started', tThisFlipGlobal)
             duration_voice.play(when=win)  # sync with win flip
         
+        # Display choice aid if needed
+        if display_choice_aid:
+            if choice_aid.status == NOT_STARTED and tThisFlip >= (ITI + prepare_duration + question_voice.duration + 
+                                                          post_question_gap + duration_voice.duration-frameTolerance):
+                # keep track of start time/frame for later
+                choice_aid.frameNStart = frameN  # exact frame index
+                choice_aid.tStart = t  # local t and not account for scr refresh
+                choice_aid.tStartRefresh = tThisFlipGlobal  # on global time
+                win.timeOnFlip(choice_aid, 'tStartRefresh')  # time at next scr refresh
+                # add timestamp to datafile
+                thisExp.timestampOnFlip(win, choice_aid.name + '.started')
+                choice_aid.setAutoDraw(True)
+
         # *choice* updates
         waitOnFlip = False
         if choice.status == NOT_STARTED and tThisFlip >= (ITI + prepare_duration + question_voice.duration + 
@@ -912,7 +936,7 @@ for thisWaiting_trial in practice1_trials:
     thisTrialDuration = this_block_durations.pop()
     thisExp.addData('wait_duration', thisTrialDuration)
     
-    run_question(practice1_trials, ITI=ITI)
+    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
     
     run_answer(practice1_trials)    
 # completed 1.0 repeats of 'practice1_trials'
