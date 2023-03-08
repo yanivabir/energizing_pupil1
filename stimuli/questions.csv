@@ -1,4 +1,4 @@
-questionId,type,question_text,answer_text,question_file,answer_file
+questionId,question_type,question_text,answer_text,question_file,answer_file
 AN_01,Animal,Which animals are born pregnant and can give birth 10 days after being born themselves?,Aphids,AN_01_q.ogg,AN_01_a.ogg
 AN_02,Animal,"What are German shepherds called in Great Britain, due to lingering anti-german sentiment following World War II?",Alsatians,AN_02_q.ogg,AN_02_a.ogg
 AN_03,Animal,What animal can live up to a week without its head?,Cockroach,AN_01_q.ogg,AN_01_a.ogg

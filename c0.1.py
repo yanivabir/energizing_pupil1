@@ -43,8 +43,8 @@ n_for_ratings_per_category = 8
 question_list = data.importConditions('stimuli/questions.csv')
 
 # Order by category
-categories = set([q["type"] for q in question_list])
-question_dict = {c:[q for q in question_list if q['type'] == c] for c in categories}
+categories = set([q["question_type"] for q in question_list])
+question_dict = {c:[q for q in question_list if q['question_type'] == c] for c in categories}
 
 # Shuffle within each category
 for c in categories:
@@ -218,7 +218,7 @@ def display_instructions(instr_text, loop_name):
         seed=None, name=loop_name)
     thisExp.addLoop(instr_trials)  # add the loop to the experiment
     thisInstr_trial = instr_trials.trialList[0]  # so we can initialise stimuli with some values
-
+    
     for thisInstr_trial in instr_trials:
         currentLoop = instr_trials
 
@@ -912,6 +912,38 @@ for thisWaiting_trial in practice1_trials:
 
 # --- Second instruction loop ---
 display_instructions(instr2_text, "instr2_trials")
+
+# Second practice loop ---
+# set up handler to look after randomisation of conditions etc
+practice2_trials = data.TrialHandler(nReps=1.0, method='random', 
+    extraInfo=expInfo, originPath=-1,
+    trialList=practice2_questions,
+    seed=None, name='practice2_trials')
+thisExp.addLoop(practice2_trials)  # add the loop to the experiment
+thisWaiting_trial = practice2_trials.trialList[0]  # so we can initialise stimuli with some values
+# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+if thisWaiting_trial != None:
+    for paramName in thisWaiting_trial:
+        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+
+for thisWaiting_trial in practice2_trials:
+    currentLoop = practice2_trials
+    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+    if thisWaiting_trial != None:
+        for paramName in thisWaiting_trial:
+            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+
+    # Draw wait duration for this trial
+    thisTrialDuration = [3, 6, 9, 12][randint(0,4)]
+    thisExp.addData('wait_duration', thisTrialDuration)
+
+    run_fixate(waiting_trials)
+    
+    run_question(waiting_trials)
+    
+    run_answer(waiting_trials)    
+# completed 1.0 repeats of 'practice2_trials'
+
 
 # --- Final message before waiting task ---
 display_instructions(instr3_text, "instr3_trials")
