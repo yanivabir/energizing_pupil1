@@ -545,7 +545,8 @@ def run_fixate(block_trials):
     routineTimer.reset()
 
 # Play question, collect choice
-def run_question(block_trials):
+def run_question(block_trials,
+                 ITI=0.0):
     # --- Prepare to start Routine "question" ---
     continueRoutine = True
     routineForceEnded = False
@@ -585,7 +586,7 @@ def run_question(block_trials):
         
         # *fixation_prepare* updates
         draw_fixation(45.0,
-                      0.0,
+                      0.0+ITI,
                       tThisFlip,
                       frameN,
                       t,
@@ -593,13 +594,13 @@ def run_question(block_trials):
         
         # *fixation_question* updates
         rotate_fixation(0.0,
-                    prepare_duration,
+                    prepare_duration+ITI,
                     tThisFlip,
                     frameN,
                     t,
                     tThisFlipGlobal)
         # start/stop question_voice
-        if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration-frameTolerance:
+        if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration+ITI-frameTolerance:
             # keep track of start time/frame for later
             question_voice.frameNStart = frameN  # exact frame index
             question_voice.tStart = t  # local t and not account for scr refresh
@@ -608,7 +609,7 @@ def run_question(block_trials):
             thisExp.addData('question_voice.started', tThisFlipGlobal)
             question_voice.play(when=win)  # sync with win flip
         # start/stop duration_voice
-        if duration_voice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration +
+        if duration_voice.status == NOT_STARTED and tThisFlip >= (ITI + prepare_duration + question_voice.duration +
                                                                   post_question_gap -frameTolerance):
             # keep track of start time/frame for later
             duration_voice.frameNStart = frameN  # exact frame index
@@ -620,7 +621,7 @@ def run_question(block_trials):
         
         # *choice* updates
         waitOnFlip = False
-        if choice.status == NOT_STARTED and tThisFlip >= (prepare_duration + question_voice.duration + 
+        if choice.status == NOT_STARTED and tThisFlip >= (ITI + prepare_duration + question_voice.duration + 
                                                           post_question_gap + duration_voice.duration / 2-frameTolerance):
             # keep track of start time/frame for later
             choice.frameNStart = frameN  # exact frame index
@@ -879,6 +880,35 @@ routineTimer = core.Clock()  # to track time remaining of each (possibly non-sli
 
 # --- First instruction loop ---
 display_instructions(instr1_text, "instr1_trials")
+
+# First practice loop ----
+# set up handler to look after randomisation of conditions etc
+practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+    extraInfo=expInfo, originPath=-1,
+    trialList=practice1_questions,
+    seed=None, name='practice1_trials')
+thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+if thisWaiting_trial != None:
+    for paramName in thisWaiting_trial:
+        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+
+for thisWaiting_trial in practice1_trials:
+    currentLoop = practice1_trials
+    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+    if thisWaiting_trial != None:
+        for paramName in thisWaiting_trial:
+            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+
+    # Draw wait duration for this trial
+    thisTrialDuration = [3, 6, 9, 12][randint(0,4)]
+    thisExp.addData('wait_duration', thisTrialDuration)
+    
+    run_question(practice1_trials, ITI=ITI)
+    
+    run_answer(practice1_trials)    
+# completed 1.0 repeats of 'practice1_trials'
 
 # --- Second instruction loop ---
 display_instructions(instr2_text, "instr2_trials")
