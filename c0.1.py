@@ -33,6 +33,7 @@ from psychopy.hardware import keyboard
 ITI = 3.0
 prepare_duration = 3.0
 post_question_gap = 0.2
+choice_deadline = 3.0
 satisfaction_duration  =  3.5
 minimal_answer_epoch = 2.2
 instructions_gap = 0.2
@@ -719,6 +720,12 @@ def run_question(block_trials,
             if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
                 continueRoutine = True
                 break  # at least one component has not yet finished
+
+        # Implement response deadline
+        if tThisFlip >= (ITI + prepare_duration + question_voice.duration + 
+                            post_question_gap + duration_voice.duration + choice_deadline -frameTolerance):
+            logging.exp("Failed to respond on time")
+            continueRoutine = False
         
         # refresh the screen
         if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
