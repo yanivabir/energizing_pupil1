@@ -453,6 +453,20 @@ choice_aid = visual.TextStim(win=win, name='choice_aid',
     antialias=True,
     depth=0.0)
 
+deadline_warning_msg = visual.TextStim(win=win, name='choice_aid',
+    text = """Please respond more quickly
+    
+Press 'd' to continue""",
+    font='Arial',
+    alignText = 'center',
+    anchorHoriz = 'center',
+    pos=(0.02, -0.1), height=0.03, wrapWidth=None, ori=0.0, 
+    color='white', colorSpace='rgb', opacity=None, 
+    languageStyle='LTR',
+    antialias=True,
+    depth=0.0)
+
+
 # --- Initialize components for Routine "answer" ---
 answer_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
     name='answer_voice')
@@ -749,7 +763,7 @@ def run_question(block_trials,
 # Play answer, collect satisfaction
 def run_answer(block_trials,
                display_satisfaction_aid=False):
-        # --- Prepare to start Routine "answer" ---
+    # --- Prepare to start Routine "answer" ---
     continueRoutine = True
     routineForceEnded = False
     # update component parameters for each repeat
@@ -920,6 +934,104 @@ def run_answer(block_trials,
     routineTimer.reset()
     thisExp.nextEntry()
 
+def display_deadline_warning():
+    # --- Prepare to start Routine "answer" ---
+    continueRoutine = True
+    routineForceEnded = False
+    # update component parameters for each repeat
+    # Run 'Begin Routine' code from conditional_answer
+    if choice.keys != None:
+        continueRoutine = False
+
+    key_resp.keys = []
+    key_resp.rt = []
+    _key_resp_allKeys = []
+
+    # keep track of which components have finished
+    deadlineComponents = [deadline_warning_msg, key_resp]
+    for thisComponent in deadlineComponents:
+        thisComponent.tStart = None
+        thisComponent.tStop = None
+        thisComponent.tStartRefresh = None
+        thisComponent.tStopRefresh = None
+        if hasattr(thisComponent, 'status'):
+            thisComponent.status = NOT_STARTED
+    # reset timers
+    t = 0
+    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
+    frameN = -1
+    
+    # --- Run Routine "answer" ---
+    while continueRoutine:
+        # get current time
+        t = routineTimer.getTime()
+        tThisFlip = win.getFutureFlipTime(clock=routineTimer)
+        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
+        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+        # update/draw components on each frame
+
+        if deadline_warning_msg.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
+            # keep track of start time/frame for later
+            deadline_warning_msg.frameNStart = frameN  # exact frame index
+            deadline_warning_msg.tStart = t  # local t and not account for scr refresh
+            deadline_warning_msg.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(deadline_warning_msg, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_instr.started')
+            deadline_warning_msg.setAutoDraw(True)
+
+        # *key_resp* updates
+        waitOnFlip = False
+        if key_resp.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
+            # keep track of start time/frame for later
+            key_resp.frameNStart = frameN  # exact frame index
+            key_resp.tStart = t  # local t and not account for scr refresh
+            key_resp.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(key_resp, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'key_resp.started')
+            key_resp.status = STARTED
+            # keyboard checking is just starting
+            waitOnFlip = True
+            win.callOnFlip(key_resp.clock.reset)  # t=0 on next screen flip
+            win.callOnFlip(key_resp.clearEvents, eventType='keyboard')  # clear events on next screen flip
+        if key_resp.status == STARTED and not waitOnFlip:
+            theseKeys = key_resp.getKeys(keyList=['d'], waitRelease=False)
+            _key_resp_allKeys.extend(theseKeys)
+            if len(_key_resp_allKeys):
+                key_resp.keys = _key_resp_allKeys[-1].name  # just the last key pressed
+                key_resp.rt = _key_resp_allKeys[-1].rt
+                # a response ends the routine
+                continueRoutine = False
+
+        
+        # check for quit (typically the Esc key)
+        if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
+            core.quit()
+        
+        # check if all components have finished
+        if not continueRoutine:  # a component has requested a forced-end of Routine
+            routineForceEnded = True
+            break
+        continueRoutine = False  # will revert to True if at least one component still running
+        for thisComponent in deadlineComponents:
+            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+                continueRoutine = True
+                break  # at least one component has not yet finished
+        
+        # refresh the screen
+        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+            win.flip()
+    
+    # --- Ending Routine "deadline_warning" ---
+    for thisComponent in deadlineComponents:
+        if hasattr(thisComponent, "setAutoDraw"):
+            thisComponent.setAutoDraw(False)
+
+    # the Routine "deadline_warning" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset()
+    thisExp.nextEntry()
+
 # --- Initialize components for Routine "rating" ---
 text = visual.TextStim(win=win, name='text',
     text='',
@@ -977,6 +1089,8 @@ for thisWaiting_trial in practice1_trials:
     thisExp.addData('wait_duration', thisTrialDuration)
     
     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+
+    display_deadline_warning()
     
     run_answer(practice1_trials, display_satisfaction_aid=True)    
 # completed 1.0 repeats of 'practice1_trials'
