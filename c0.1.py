@@ -406,6 +406,7 @@ def rotate_fixation(ori,
 
         
         if (n.status == NOT_STARTED or n.status == FINISHED) and tThisFlip >= when-frameTolerance:
+            
             # keep track of start time/frame for later
             n.frameNStart = frameN  # exact frame index
             n.tStart = t  # local t and not account for scr refresh
@@ -460,6 +461,23 @@ mic = sound.microphone.Microphone(
     sampleRateHz=48000, maxRecordingSize=24000.0
 )
 static_wait = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='static_wait')
+
+satisfaction_aid = visual.TextStim(win=win, name='satisfaction_aid',
+    text = """Speak:
+
+    1     2       3       4       5
+    
+Not worth                     Extremely
+    it                         worth it
+""",
+    font='Arial',
+    alignText = 'center',
+    anchorHoriz = 'center',
+    pos=(0.01, -0.2), height=0.03, wrapWidth=None, ori=0.0, 
+    color='white', colorSpace='rgb', opacity=None, 
+    languageStyle='LTR',
+    antialias=True,
+    depth=0.0)
 
 # --- Functions for calling routines "fixate", "question", "answer" ---
 # Start trial, wait for fixation
@@ -722,7 +740,8 @@ def run_question(block_trials,
     routineTimer.reset()
 
 # Play answer, collect satisfaction
-def run_answer(block_trials):
+def run_answer(block_trials,
+               display_satisfaction_aid=False):
         # --- Prepare to start Routine "answer" ---
     continueRoutine = True
     routineForceEnded = False
@@ -789,17 +808,31 @@ def run_answer(block_trials):
                         t,
                         tThisFlipGlobal)
 
-        for x in [fixation_circle, fixation_cross_rotated, fixation_cross_cardinal, fixation_dot]:
+        for x in [fixation_circle, fixation_cross_rotated, fixation_cross_cardinal, fixation_dot, satisfaction_aid]:
             if x.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
                 if tThisFlip > thisTrialDuration + answer_epoch + satisfaction_duration-frameTolerance:
+                    print("stopped")
                     # keep track of stop time/frame for later
                     x.tStop = t  # not accounting for scr refresh
                     x.frameNStop = frameN  # exact frame index
                     # add timestamp to datafile
                     thisExp.timestampOnFlip(win, x.name + '.stopped')
                     x.setAutoDraw(False)
-                    x.status = FINISHED
+                    x.status = PAUSED
+
+        # Display satisfaction aid if needed
+        if display_satisfaction_aid:
+            if satisfaction_aid.status == NOT_STARTED and tThisFlip >= thisTrialDuration + answer_epoch-frameTolerance:
+                # keep track of start time/frame for later
+                satisfaction_aid.frameNStart = frameN  # exact frame index
+                satisfaction_aid.tStart = t  # local t and not account for scr refresh
+                satisfaction_aid.tStartRefresh = tThisFlipGlobal  # on global time
+                win.timeOnFlip(satisfaction_aid, 'tStartRefresh')  # time at next scr refresh
+                # add timestamp to datafile
+                thisExp.timestampOnFlip(win, satisfaction_aid.name + '.started')
+                satisfaction_aid.setAutoDraw(True)
+
         
         # mic updates
         if mic.status == NOT_STARTED and t >= thisTrialDuration + answer_epoch-frameTolerance:
@@ -938,7 +971,7 @@ for thisWaiting_trial in practice1_trials:
     
     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
     
-    run_answer(practice1_trials)    
+    run_answer(practice1_trials, display_satisfaction_aid=True)    
 # completed 1.0 repeats of 'practice1_trials'
 
 # --- Second instruction loop ---
