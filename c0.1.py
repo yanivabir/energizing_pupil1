@@ -33,7 +33,7 @@ from psychopy.hardware import keyboard
 ITI = 3.0
 prepare_duration = 3.0
 post_question_gap = 0.2
-satisfaction_duration  =  3.0
+satisfaction_duration  =  3.5
 minimal_answer_epoch = 2.2
 instructions_gap = 0.2
 waiting_task_duration = 1*60 #40*60
