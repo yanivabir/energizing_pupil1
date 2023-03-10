@@ -120,7 +120,9 @@ For this purpose, we need you to always be looking at the target displayed at th
 
 Press 'd' to continue."""},
     {"text_page": """When the computer is ready to play a question, the target will appear on the screen.
-When you are ready to hear it, gaze at the target. When the target rotates, that means that the computer registered your gaze correctly. Shortly after that, the question will play.
+When you are ready to hear the question, fix your gaze on the target. 
+
+When the computer has correctly registered your gaze, the target will rotate. Shortly after, the question will play.
 From there on, each quesitons is played just as before, and you respond just as you practiced.
 
 Press 'd' to continue."""},
@@ -130,6 +132,8 @@ Try to keep your gaze on the target for the entire sequence: question, answer, a
 
 Press 'd' to continue."""},
     {"text_page": """You will now complete a short practice to get comfortable with directing your gaze and responding. 
+
+You should respond just as before. This time, you will not be presented with a reminder about the location of the keys or the 1-5 rating scale for the whether the answer was worth it.
 
 Please ring the bell now to call the experimenter.""",
     "cont_key": "q"}
@@ -833,7 +837,7 @@ def run_answer(block_trials,
             if x.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
                 if tThisFlip > thisTrialDuration + answer_epoch + satisfaction_duration-frameTolerance:
-                    print("stopped")
+                    print('trying to pause')
                     # keep track of stop time/frame for later
                     x.tStop = t  # not accounting for scr refresh
                     x.frameNStop = frameN  # exact frame index
@@ -908,7 +912,7 @@ def run_answer(block_trials,
             break
         continueRoutine = False  # will revert to True if at least one component still running
         for thisComponent in answerComponents:
-            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+            if hasattr(thisComponent, "status") and thisComponent.status not in [FINISHED, PAUSED]:
                 continueRoutine = True
                 break  # at least one component has not yet finished
         
@@ -1095,6 +1099,7 @@ for thisWaiting_trial in practice1_trials:
     run_answer(practice1_trials, display_satisfaction_aid=True)    
 # completed 1.0 repeats of 'practice1_trials'
 
+print("here")
 # --- Second instruction loop ---
 display_instructions(instr2_text, "instr2_trials")
 
