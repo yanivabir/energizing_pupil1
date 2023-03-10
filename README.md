@@ -50,7 +50,7 @@ Try to keep your gaze on the target for the entire sequence: question, answer, a
 
 To do:
 - [x] Allocate items to rating, waiting 
-- [ ] Instructions
+- [x] Instructions
 - [x] Demographics
 - [x] Timing
 - [x] Max time
@@ -58,5 +58,5 @@ To do:
 - [ ] Sound
 - [ ] Rating task formattting and ITI
 - [ ] Mouse visibility
-- [ ] Function for trial. Argumets: police, aids
-- [ ] Function for fixate portion of trial
+- [x] Function for trial. Argumets: police, aids
+- [x] Function for fixate portion of trial
