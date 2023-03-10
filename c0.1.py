@@ -961,7 +961,7 @@ def display_deadline_warning():
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
     frameN = -1
     
-    # --- Run Routine "answer" ---
+    # --- Run Routine "deadline_warning" ---
     while continueRoutine:
         # get current time
         t = routineTimer.getTime()
