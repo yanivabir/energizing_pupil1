@@ -1127,7 +1127,9 @@ def display_call_experimenter(warning_counter):
                 key_resp.rt = _key_resp_allKeys[-1].rt
                 # a response ends the routine
                 continueRoutine = False
+                
                 warning_counter = 0
+                logging.data("Warning counter reset")
 
         
         # check for quit (typically the Esc key)
