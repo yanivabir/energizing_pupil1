@@ -1317,6 +1317,14 @@ for thisWaiting_trial in waiting_trials:
     thisExp.nextEntry()    
 # completed 1.0 repeats of 'waiting_trials'
 
+# save mic recordings
+for tag in mic.clips:
+    for i, clip in enumerate(mic.clips[tag]):
+        clipFilename = 'recording_mic_%s.wav' % tag
+        # if there's more than 1 clip with this tag, append a counter for all beyond the first
+        if i > 0:
+            clipFilename += '_%s' % i
+        clip.save(os.path.join(micRecFolder, clipFilename))
 
 # set up handler to look after randomisation of conditions etc
 rating_trials = data.TrialHandler(nReps=1.0, method='random', 
@@ -1421,15 +1429,6 @@ for thisRating_trial in rating_trials:
     thisExp.nextEntry()
     
 # completed 1.0 repeats of 'rating_trials'
-
-# save mic recordings
-for tag in mic.clips:
-    for i, clip in enumerate(mic.clips[tag]):
-        clipFilename = 'recording_mic_%s.wav' % tag
-        # if there's more than 1 clip with this tag, append a counter for all beyond the first
-        if i > 0:
-            clipFilename += '_%s' % i
-        clip.save(os.path.join(micRecFolder, clipFilename))
 
 # --- End experiment ---
 # Flip one final time so any remaining win.callOnFlip() 
