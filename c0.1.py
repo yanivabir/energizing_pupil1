@@ -1040,7 +1040,7 @@ def display_deadline_warning():
 text = visual.TextStim(win=win, name='text',
     text='',
     font='Arial',
-    pos=(0, 0), height=0.05, wrapWidth=None, ori=0.0, 
+    pos=(0, 0), height=0.04, wrapWidth=None, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     depth=0.0);
@@ -1048,7 +1048,7 @@ slider = visual.Slider(win=win, name='slider',
     startValue=None, size=(12.0, 1.0), pos=(0, -3.4), units='deg',
     labels=("Know", "1", "2", "3", "4", "5"), ticks=(0, 1, 2, 3, 4, 5), granularity=1.0,
     style='rating', styleTweaks=(), opacity=None,
-    labelColor='LightGray', markerColor='Red', lineColor='White', colorSpace='rgb',
+    labelColor='LightGray', markerColor='Blue', lineColor='White', colorSpace='rgb',
     font='Open Sans', labelHeight=1.0,
     flip=False, ori=0.0, depth=-1, readOnly=False)
 
@@ -1202,7 +1202,7 @@ for thisRating_trial in rating_trials:
     continueRoutine = True
     routineForceEnded = False
     # update component parameters for each repeat
-    text.setText("How curious are you to know: \n" + question_text)
+    text.setText("How curious are you to know: \n\n" + question_text + "\n\n\n")
     slider.reset()
     # keep track of which components have finished
     ratingComponents = [text, slider]
@@ -1228,7 +1228,7 @@ for thisRating_trial in rating_trials:
         # update/draw components on each frame
         
         # *text* updates
-        if text.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        if text.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
             # keep track of start time/frame for later
             text.frameNStart = frameN  # exact frame index
             text.tStart = t  # local t and not account for scr refresh
@@ -1239,7 +1239,7 @@ for thisRating_trial in rating_trials:
             text.setAutoDraw(True)
         
         # *slider* updates
-        if slider.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        if slider.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
             # keep track of start time/frame for later
             slider.frameNStart = frameN  # exact frame index
             slider.tStart = t  # local t and not account for scr refresh
