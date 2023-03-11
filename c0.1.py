@@ -935,7 +935,6 @@ def run_answer(block_trials,
     block_trials.addData('mic.clip', os.path.join(micRecFolder, 'recording_mic_%s.wav' % tag))
     # the Routine "answer" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
-    thisExp.nextEntry()
 
 warning_counter =  0
 def display_deadline_warning(warning_counter):
@@ -1041,7 +1040,6 @@ def display_deadline_warning(warning_counter):
 
     # the Routine "deadline_warning" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
-    thisExp.nextEntry()
 
     return warning_counter
 
@@ -1141,7 +1139,6 @@ def display_call_experimenter():
 
     # the Routine "deadline_warning" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
-    thisExp.nextEntry()
 
 # --- Initialize components for Routine "rating" ---
 text = visual.TextStim(win=win, name='text',
@@ -1201,9 +1198,11 @@ for thisWaiting_trial in practice1_trials:
     
     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-    warning_counter =  display_deadline_warning(warning_counter)
+    warning_counter = display_deadline_warning(warning_counter)
     
-    run_answer(practice1_trials, display_satisfaction_aid=True)    
+    run_answer(practice1_trials, display_satisfaction_aid=True)
+
+    thisExp.nextEntry()    
 # completed 1.0 repeats of 'practice1_trials'
 
 # --- Second instruction loop ---
@@ -1241,9 +1240,11 @@ for thisWaiting_trial in practice2_trials:
     
     run_question(practice2_trials)
 
-    display_deadline_warning()
+    warning_counter = display_deadline_warning(warning_counter)
     
-    run_answer(practice2_trials)    
+    run_answer(practice2_trials)
+
+    thisExp.nextEntry()    
 # completed 1.0 repeats of 'practice2_trials'
 
 
@@ -1283,9 +1284,11 @@ for thisWaiting_trial in waiting_trials:
     
     run_question(waiting_trials)
 
-    display_deadline_warning()
+    warning_counter = display_deadline_warning(warning_counter)
     
-    run_answer(waiting_trials)    
+    run_answer(waiting_trials)
+
+    thisExp.nextEntry()    
 # completed 1.0 repeats of 'waiting_trials'
 
 
