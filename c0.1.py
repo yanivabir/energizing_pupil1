@@ -837,7 +837,6 @@ def run_answer(block_trials,
             if x.status == STARTED:
                 # is it time to stop? (based on global clock, using actual start)
                 if tThisFlip > thisTrialDuration + answer_epoch + satisfaction_duration-frameTolerance:
-                    print('trying to pause')
                     # keep track of stop time/frame for later
                     x.tStop = t  # not accounting for scr refresh
                     x.frameNStop = frameN  # exact frame index
@@ -1099,7 +1098,6 @@ for thisWaiting_trial in practice1_trials:
     run_answer(practice1_trials, display_satisfaction_aid=True)    
 # completed 1.0 repeats of 'practice1_trials'
 
-print("here")
 # --- Second instruction loop ---
 display_instructions(instr2_text, "instr2_trials")
 
@@ -1134,6 +1132,8 @@ for thisWaiting_trial in practice2_trials:
     run_fixate(practice2_trials)
     
     run_question(practice2_trials)
+
+    display_deadline_warning()
     
     run_answer(practice2_trials)    
 # completed 1.0 repeats of 'practice2_trials'
@@ -1174,6 +1174,8 @@ for thisWaiting_trial in waiting_trials:
     run_fixate(waiting_trials)
     
     run_question(waiting_trials)
+
+    display_deadline_warning()
     
     run_answer(waiting_trials)    
 # completed 1.0 repeats of 'waiting_trials'
