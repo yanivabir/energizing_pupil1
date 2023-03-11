@@ -54,9 +54,10 @@ To do:
 - [x] Demographics
 - [x] Timing
 - [x] Max time
-- [x] ET
+- [ ] ET
 - [ ] Sound
-- [ ] Rating task formattting and ITI
+- [X] Rating task formattting and ITI
+- [ ] Rating task instructions
 - [ ] Mouse visibility
 - [x] Function for trial. Argumets: police, aids
 - [x] Function for fixate portion of trial

@@ -49,6 +49,7 @@ question_list = data.importConditions('stimuli/questions.csv')
 
 # Order by category
 categories = set([q["question_type"] for q in question_list])
+n_categories = len(categories)
 question_dict = {c:[q for q in question_list if q['question_type'] == c] for c in categories}
 
 # Shuffle within each category
@@ -146,6 +147,23 @@ instr3_text = [
 This part will be {int(waiting_task_duration / 60)} minutes long.
     
 Press 'd' to begin the task. """}
+]
+
+rating_instr_text = [
+    {"text_page": f"""In the next part of this experiment, you will be 
+presented with {n_categories} qustions. We would like you to rate your curiosity to know the answer to each of these questions.
+
+You will rate your curiosity on a scale of 
+1 - "Not curious at all"     to       5 - "Extremely curious",
+    
+If you are 100% confident that you know the answer to the question press 'Know' instead of rating your curiosity. Only use this option for questions you are absolutely sure you know the answer to.
+
+Press the space key to continue""",
+    "cont_key": "space"},
+    {"text_page":  """In this study we are interested in your own personal judgment. Therefore it is important that you rely only on your own knowledge and give your best answer "off the top of your head."
+
+Press the space key to begin this part of the experiment.""",
+    "cont_key": "space"}
 ]
 
 # Ensure that relative paths start from the same directory as this script
@@ -1325,6 +1343,10 @@ for tag in mic.clips:
         if i > 0:
             clipFilename += '_%s' % i
         clip.save(os.path.join(micRecFolder, clipFilename))
+
+# --- Ration task ---
+# Present instructions
+display_instructions(rating_instr_text, "rating_instr_trials")
 
 # set up handler to look after randomisation of conditions etc
 rating_trials = data.TrialHandler(nReps=1.0, method='random', 
