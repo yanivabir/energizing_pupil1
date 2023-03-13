@@ -209,6 +209,18 @@ else:
         core.quit()
         sys.exit()
 
+# Step 2: Open an EDF data file on the Host PC
+edf_file = expInfo['participant'] + ".EDF"
+try:
+    el_tracker.openDataFile(edf_file)
+except RuntimeError as err:
+    print('ERROR:', err)
+    # close the link if we have one open
+    if el_tracker.isConnected():
+        el_tracker.close()
+    core.quit()
+    sys.exit()
+
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
     extraInfo=expInfo, runtimeInfo=None,
