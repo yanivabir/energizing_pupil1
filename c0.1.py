@@ -46,6 +46,9 @@ max_warnings = 5
 
 n_for_ratings_per_category = 8
 
+# Set this variable to True to run the script in eyetracking "Dummy Mode"
+dummy_mode = True
+
 # --- Draw questions for rating ---
 # Import questios
 question_list = data.importConditions('stimuli/questions.csv')
@@ -189,6 +192,22 @@ expInfo['psychopyVersion'] = psychopyVersion
 
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
 filename = _thisDir + os.sep + u'data/%s_%s_%s' % (expInfo['participant'], expName, expInfo['date'])
+
+# Step 1: Connect to the EyeLink Host PC
+#
+# The Host IP address, by default, is "100.1.1.1".
+# the "el_tracker" objected created here can be accessed through the Pylink
+# Set the Host PC address to "None" (without quotes) to run the script
+# in "Dummy Mode"
+if dummy_mode:
+    el_tracker = pylink.EyeLink(None)
+else:
+    try:
+        el_tracker = pylink.EyeLink("100.1.1.1")
+    except RuntimeError as error:
+        print('ERROR:', error)
+        core.quit()
+        sys.exit()
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
