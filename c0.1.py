@@ -15,16 +15,17 @@ If you publish work using this script the most relevant publication is:
 from psychopy import locale_setup
 from psychopy import prefs
 prefs.hardware['audioLib'] = 'ptb'
-from psychopy import sound, gui, visual, core, data, event, logging, clock, colors, layout
+from psychopy import sound, gui, visual, core, data, event, logging, clock, colors, layout, monitors
 from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
+from psychopy.tools.monitorunittools import deg2pix
 
 import pylink
 from EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
 import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import (sin, cos, tan, log, log10, pi, average,
-                   sqrt, std, deg2rad, rad2deg, linspace, asarray)
+                   sqrt, std, deg2rad, rad2deg, linspace, asarray, fabs)
 from numpy.random import random, randint, normal, shuffle, choice as randchoice
 import os  # handy system and path functions
 import sys  # to get file system encoding
@@ -39,6 +40,8 @@ post_question_gap = 0.2
 choice_deadline = 3.0
 satisfaction_duration  =  3.5
 minimal_answer_epoch = 2.2
+minimal_fixation_duration = 0.5
+fixation_distance = 60 # in pixels. change to degrees
 instructions_gap = 0.2
 waiting_task_duration = 1*60 #40*60
 wait_durations = [3, 6, 9, 12]
@@ -280,12 +283,15 @@ if not os.path.isdir(micRecFolder):
     os.mkdir(micRecFolder)
 
 # --- Setup the Window ---
+mon = monitors.Monitor('testMonitor')
 win = visual.Window(
-    size=[1000, 800], fullscr=False, screen=0, 
+    fullscr=True, screen=0, 
     winType='pyglet', allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True, 
-    units='height')
+    units='deg')
+scn_width, scn_height = win.size
+
 win.mouseVisible = True
 # store frame rate of monitor if we can measure it
 expInfo['frameRate'] = win.getActualFrameRate()
@@ -468,6 +474,37 @@ fixation_dot = visual.ShapeStim(
     lineWidth=0.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
     opacity=None, depth=-1.0, interpolate=True)
 
+def check_fixation(t,
+                    gaze_start,
+                    in_hit_region,
+                    dummy_mode):
+    if dummy_mode:
+        g_x, g_y = deg2pix(mouse.getPos(), mon)
+        
+        # for mouse, origin is center
+        fix_x, fix_y = (0.0, 0.0)
+        print(g_x, g_y)
+    else:
+        # For ET, origin is corner
+        fix_x, fix_y = (scn_width/2.0, scn_height/2.0)
+
+    # return true if the current gaze position is
+    # in a 120 x 120 pixels region around the screen centered
+    # 
+    if fabs(g_x - fix_x) < fixation_distance and fabs(g_y - fix_y) < fixation_distance:
+        # record gaze start time
+        if not in_hit_region:
+            if gaze_start == -1:
+                gaze_start = t
+                in_hit_region = True
+    else:  # gaze outside the hit region, reset variables
+        in_hit_region = False
+        gaze_start = -1
+
+    return in_hit_region, gaze_start
+
+
+
 def draw_fixation(ori,
                   when,
                   tThisFlip,
@@ -625,6 +662,8 @@ def run_fixate(block_trials):
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
     frameN = -1
     
+    gaze_start = -1
+    in_hit_region = False
     # --- Run Routine "fixate" ---
     while continueRoutine:
         # get current time
@@ -641,29 +680,15 @@ def run_fixate(block_trials):
                       frameN,
                       t,
                       tThisFlipGlobal)
-                    
-        # *fixation_placeholder* updates
-        waitOnFlip = False
-        if fixation_placeholder.status == NOT_STARTED and tThisFlip >= ITI -frameTolerance:
-            # keep track of start time/frame for later
-            fixation_placeholder.frameNStart = frameN  # exact frame index
-            fixation_placeholder.tStart = t  # local t and not account for scr refresh
-            fixation_placeholder.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(fixation_placeholder, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'fixation_placeholder.started')
-            fixation_placeholder.status = STARTED
-            # keyboard checking is just starting
-            waitOnFlip = True
-            win.callOnFlip(fixation_placeholder.clock.reset)  # t=0 on next screen flip
-            win.callOnFlip(fixation_placeholder.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        if fixation_placeholder.status == STARTED and not waitOnFlip:
-            theseKeys = fixation_placeholder.getKeys(keyList=['space'], waitRelease=False)
-            _fixation_placeholder_allKeys.extend(theseKeys)
-            if len(_fixation_placeholder_allKeys):
-                fixation_placeholder.keys = _fixation_placeholder_allKeys[-1].name  # just the last key pressed
-                fixation_placeholder.rt = _fixation_placeholder_allKeys[-1].rt
-                # a response ends the routine
+        
+        in_hit_region, gaze_start = check_fixation(tThisFlip,
+                                                    gaze_start,
+                                                    in_hit_region,
+                                                    dummy_mode)
+        
+        if in_hit_region:
+            if tThisFlip >= gaze_start + minimal_fixation_duration:
+                logging.data("Minimal fixation duration achieved")
                 continueRoutine = False
         
         # check for quit (typically the Esc key)
@@ -1278,49 +1303,49 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-display_instructions(instr1_text, "instr1_trials")
+# display_instructions(instr1_text, "instr1_trials")
 
-# First practice loop ----
-# set up handler to look after randomisation of conditions etc
-practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
-    extraInfo=expInfo, originPath=-1,
-    trialList=practice1_questions,
-    seed=None, name='practice1_trials')
-thisExp.addLoop(practice1_trials)  # add the loop to the experiment
-thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
-# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-if thisWaiting_trial != None:
-    for paramName in thisWaiting_trial:
-        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# # First practice loop ----
+# # set up handler to look after randomisation of conditions etc
+# practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+#     extraInfo=expInfo, originPath=-1,
+#     trialList=practice1_questions,
+#     seed=None, name='practice1_trials')
+# thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+# thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+# if thisWaiting_trial != None:
+#     for paramName in thisWaiting_trial:
+#         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-# Sample durations w/o replacement
-this_block_durations = copy.copy(wait_durations)
-shuffle(this_block_durations)
+# # Sample durations w/o replacement
+# this_block_durations = copy.copy(wait_durations)
+# shuffle(this_block_durations)
 
-for thisWaiting_trial in practice1_trials:
-    currentLoop = practice1_trials
-    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-    if thisWaiting_trial != None:
-        for paramName in thisWaiting_trial:
-            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# for thisWaiting_trial in practice1_trials:
+#     currentLoop = practice1_trials
+#     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+#     if thisWaiting_trial != None:
+#         for paramName in thisWaiting_trial:
+#             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-    # Sample durations w/o replacement
-    thisTrialDuration = this_block_durations.pop()
-    thisExp.addData('wait_duration', thisTrialDuration)
+#     # Sample durations w/o replacement
+#     thisTrialDuration = this_block_durations.pop()
+#     thisExp.addData('wait_duration', thisTrialDuration)
     
-    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+#     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-    warning_counter = display_deadline_warning(warning_counter)
+#     warning_counter = display_deadline_warning(warning_counter)
 
-    warning_counter = display_call_experimenter(warning_counter)
+#     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice1_trials, display_satisfaction_aid=True)
+#     run_answer(practice1_trials, display_satisfaction_aid=True)
 
-    thisExp.nextEntry()    
-# completed 1.0 repeats of 'practice1_trials'
+#     thisExp.nextEntry()    
+# # completed 1.0 repeats of 'practice1_trials'
 
-# --- Second instruction loop ---
-display_instructions(instr2_text, "instr2_trials")
+# # --- Second instruction loop ---
+# display_instructions(instr2_text, "instr2_trials")
 
 # Second practice loop ---
 # set up handler to look after randomisation of conditions etc
