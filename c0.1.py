@@ -567,6 +567,8 @@ def rotate_fixation(ori,
                 thisExp.timestampOnFlip(win, o.name + '.stopped')
                 o.setAutoDraw(False)
 
+fixation_placeholder = keyboard.Keyboard()
+
 # --- Initialize components for Routine "question" ---
 static_prepare = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='static_prepare')
 question_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
@@ -646,8 +648,11 @@ def run_fixate(block_trials):
     continueRoutine = True
     routineForceEnded = False
     # update component parameters for each repeat
+    fixation_placeholder.keys = []
+    fixation_placeholder.rt = []
+    _fixation_placeholder_allKeys = []
     # keep track of which components have finished
-    fixateComponents = [fixation_cross_cardinal, fixation_dot, fixation_circle]
+    fixateComponents = [fixation_placeholder, fixation_cross_cardinal, fixation_dot, fixation_circle]
     for thisComponent in fixateComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -713,6 +718,12 @@ def run_fixate(block_trials):
     for thisComponent in fixateComponents:
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
+    # check responses
+    if fixation_placeholder.keys in ['', [], None]:  # No response was made
+        fixation_placeholder.keys = None
+    block_trials.addData('fixation_placeholder.keys',fixation_placeholder.keys)
+    if fixation_placeholder.keys != None:  # we had a response
+        block_trials.addData('fixation_placeholder.rt', fixation_placeholder.rt)
     # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
