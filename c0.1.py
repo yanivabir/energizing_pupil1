@@ -564,8 +564,6 @@ def rotate_fixation(ori,
                 thisExp.timestampOnFlip(win, o.name + '.stopped')
                 o.setAutoDraw(False)
 
-fixation_placeholder = keyboard.Keyboard()
-
 # --- Initialize components for Routine "question" ---
 static_prepare = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='static_prepare')
 question_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
@@ -645,11 +643,8 @@ def run_fixate(block_trials):
     continueRoutine = True
     routineForceEnded = False
     # update component parameters for each repeat
-    fixation_placeholder.keys = []
-    fixation_placeholder.rt = []
-    _fixation_placeholder_allKeys = []
     # keep track of which components have finished
-    fixateComponents = [fixation_placeholder, fixation_cross_cardinal, fixation_dot, fixation_circle]
+    fixateComponents = [fixation_cross_cardinal, fixation_dot, fixation_circle]
     for thisComponent in fixateComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -713,12 +708,6 @@ def run_fixate(block_trials):
     for thisComponent in fixateComponents:
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
-    # check responses
-    if fixation_placeholder.keys in ['', [], None]:  # No response was made
-        fixation_placeholder.keys = None
-    block_trials.addData('fixation_placeholder.keys',fixation_placeholder.keys)
-    if fixation_placeholder.keys != None:  # we had a response
-        block_trials.addData('fixation_placeholder.rt', fixation_placeholder.rt)
     # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
@@ -1303,49 +1292,49 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-# display_instructions(instr1_text, "instr1_trials")
+display_instructions(instr1_text, "instr1_trials")
 
-# # First practice loop ----
-# # set up handler to look after randomisation of conditions etc
-# practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
-#     extraInfo=expInfo, originPath=-1,
-#     trialList=practice1_questions,
-#     seed=None, name='practice1_trials')
-# thisExp.addLoop(practice1_trials)  # add the loop to the experiment
-# thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
-# # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-# if thisWaiting_trial != None:
-#     for paramName in thisWaiting_trial:
-#         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# First practice loop ----
+# set up handler to look after randomisation of conditions etc
+practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+    extraInfo=expInfo, originPath=-1,
+    trialList=practice1_questions,
+    seed=None, name='practice1_trials')
+thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+if thisWaiting_trial != None:
+    for paramName in thisWaiting_trial:
+        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-# # Sample durations w/o replacement
-# this_block_durations = copy.copy(wait_durations)
-# shuffle(this_block_durations)
+# Sample durations w/o replacement
+this_block_durations = copy.copy(wait_durations)
+shuffle(this_block_durations)
 
-# for thisWaiting_trial in practice1_trials:
-#     currentLoop = practice1_trials
-#     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-#     if thisWaiting_trial != None:
-#         for paramName in thisWaiting_trial:
-#             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+for thisWaiting_trial in practice1_trials:
+    currentLoop = practice1_trials
+    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+    if thisWaiting_trial != None:
+        for paramName in thisWaiting_trial:
+            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-#     # Sample durations w/o replacement
-#     thisTrialDuration = this_block_durations.pop()
-#     thisExp.addData('wait_duration', thisTrialDuration)
+    # Sample durations w/o replacement
+    thisTrialDuration = this_block_durations.pop()
+    thisExp.addData('wait_duration', thisTrialDuration)
     
-#     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-#     warning_counter = display_deadline_warning(warning_counter)
+    warning_counter = display_deadline_warning(warning_counter)
 
-#     warning_counter = display_call_experimenter(warning_counter)
+    warning_counter = display_call_experimenter(warning_counter)
     
-#     run_answer(practice1_trials, display_satisfaction_aid=True)
+    run_answer(practice1_trials, display_satisfaction_aid=True)
 
-#     thisExp.nextEntry()    
-# # completed 1.0 repeats of 'practice1_trials'
+    thisExp.nextEntry()    
+# completed 1.0 repeats of 'practice1_trials'
 
-# # --- Second instruction loop ---
-# display_instructions(instr2_text, "instr2_trials")
+# --- Second instruction loop ---
+display_instructions(instr2_text, "instr2_trials")
 
 # Second practice loop ---
 # set up handler to look after randomisation of conditions etc
