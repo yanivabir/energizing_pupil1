@@ -452,6 +452,7 @@ fixation_dot = visual.ShapeStim(
 
 def check_fixation(t,
                     gaze_start,
+                    gaze_stop,
                     in_hit_region,
                     dummy_mode):
     if dummy_mode:
@@ -459,7 +460,6 @@ def check_fixation(t,
         
         # for mouse, origin is center
         fix_x, fix_y = (0.0, 0.0)
-        print(g_x, g_y)
     else:
         # For ET, origin is corner
         fix_x, fix_y = (scn_width/2.0, scn_height/2.0)
@@ -472,12 +472,15 @@ def check_fixation(t,
         if not in_hit_region:
             if gaze_start == -1:
                 gaze_start = t
+                gaze_stop = -1
                 in_hit_region = True
     else:  # gaze outside the hit region, reset variables
-        in_hit_region = False
-        gaze_start = -1
+        if in_hit_region:
+            gaze_stop = t
+            in_hit_region = False
+            gaze_start = -1
 
-    return in_hit_region, gaze_start
+    return in_hit_region, gaze_start, gaze_stop
 
 
 
@@ -613,7 +616,7 @@ Not worth                     Extremely
 
 # --- Functions for calling routines "fixate", "question", "answer" ---
 # Start trial, wait for fixation
-def run_fixate(block_trials):
+def srun_fixate(block_trials):
     # --- Prepare to start Routine "fixate" ---
     continueRoutine = True
     routineForceEnded = False
@@ -651,8 +654,9 @@ def run_fixate(block_trials):
                       t,
                       tThisFlipGlobal)
         
-        in_hit_region, gaze_start = check_fixation(tThisFlip,
+        in_hit_region, gaze_start, _ = check_fixation(tThisFlip,
                                                     gaze_start,
+                                                    -1,
                                                     in_hit_region,
                                                     dummy_mode)
         
