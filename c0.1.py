@@ -4,11 +4,9 @@
 This experiment was created using PsychoPy3 Experiment Builder (v2022.2.5),
     on Mon Feb 27 01:19:57 2023
 If you publish work using this script the most relevant publication is:
-
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
         PsychoPy2: Experiments in behavior made easy Behav Res 51: 195. 
         https://doi.org/10.3758/s13428-018-01193-y
-
 """
 
 # --- Import packages ---
@@ -84,22 +82,15 @@ You will now complete a computer task about curiosity.
 In this task, you will listen to a series of trivia questions about animals, the arts, food, or geography.
 Press 'd' to read the instructions for this task."""},
  {"text_page": """For each question, you must decide if you want to know the answer to the question.
-
 If you want to find out the answer, you will have to wait a certain amount of time. The required waiting period for each answer will be read out to you after you hear the question.
-
 If you do not want to wait to see the answer, you can choose to skip the question.
-
 If you are 100% certain that you already know the answer to the question, you may indicate that you already know it.
-
 If you choose to skip or indicate that you know the answer, you will NOT see the answer to the question.
-
 Press 'd' to continue."""},
 {"text_page":["""To wait for answer, you will press the 'd' key.
 To skip the answer, press the 'g' key.
 If you 100% know the answer, press the 'j' key.
-
 Refer to this diagram below to make sure you understand which key to press.
-
                      Wait                          Skip                        Know""",
 """
           ┏━━━┓           ┏━━━┓           ┏━━━┓
@@ -111,48 +102,36 @@ Refer to this diagram below to make sure you understand which key to press.
 "poss": [(0.0, 0.2), (0.0, 0.0), (0.0, -0.15)]},
 {"text_page": """If you choose to wait for a question, you will be asked to rate if the answer was worth waiting for on as scale of 1 to 5. 
 If the answer was not worth the wait, it should be rated as 1. If it was extremely worth it, rate it as 5. Use numbers 2-4 for annything in between.
-
 Press 'd' to continue."""},
 {"text_page": """To rate the answer, please speak the number you choose ("one", "two", "three", "four", or "five") into the microphone.
 Please only use whole numbers, no fractions.
-
 Press 'd' to continue."""},
 {"text_page": f"""The task will continue for {int(waiting_task_duration / 60)} minutes. The task takes the same amount of time regardless of how many questions you choose to skip or wait for, so please base your decisions on how interested you are in learning the answers.
-
 Press 'd' to continue."""},
 {"text_page": """You will now complete a short practice to get comfortable with the task. Please use this time to get used to pressing the different buttons, to rating the answers out loud, and to the amount of time you have to respond to the different prompts.
-
 Press 'd' to start the practice."""}
 ]
 
 instr2_text = [
     {"text_page": """During this task, we will be recording your eyes using the camera in front of you. 
 For this purpose, we need you to always be looking at the target displayed at the center of the screen, unless you are taking a break.
-
 Press 'd' to continue."""},
     {"text_page": """When the computer is ready to play a question, the target will appear on the screen.
 When you are ready to hear the question, fix your gaze on the target. 
-
 When the computer has correctly registered your gaze, the target will rotate. Shortly after, the question will play.
 From there on, each quesitons is played just as before, and you respond just as you practiced.
-
 Press 'd' to continue."""},
     {"text_page": """If your gaze leaves the target after you initiated a question, the game will stop and the computer will beep to indicate it had lost your gaze.
-
 Try to keep your gaze on the target for the entire sequence: question, answer, and satisfaction rating. Use the intervals between questions, to rest, look away, or blink as much as you need.
-
 Press 'd' to continue."""},
     {"text_page": """You will now complete a short practice to get comfortable with directing your gaze and responding. 
-
 You should respond just as before. This time, you will not be presented with a reminder about the location of the keys or the 1-5 rating scale for the whether the answer was worth it.
-
 Please ring the bell now to call the experimenter.""",
     "cont_key": "q"}
 ]
 
 instr3_text = [
     {"text_page": f"""You will now start work on the curiosity task.
-
 This part will be {int(waiting_task_duration / 60)} minutes long.
     
 Press 'd' to begin the task. """}
@@ -161,16 +140,13 @@ Press 'd' to begin the task. """}
 rating_instr_text = [
     {"text_page": f"""In the next part of this experiment, you will be 
 presented with {n_categories} qustions. We would like you to rate your curiosity to know the answer to each of these questions.
-
 You will rate your curiosity on a scale of 
 1 - "Not curious at all"     to       5 - "Extremely curious",
     
 If you are 100% confident that you know the answer to the question press 'Know' instead of rating your curiosity. Only use this option for questions you are absolutely sure you know the answer to.
-
 Press the space key to continue""",
     "cont_key": "space"},
     {"text_page":  """In this study we are interested in your own personal judgment. Therefore it is important that you rely only on your own knowledge and give your best answer "off the top of your head."
-
 Press the space key to begin this part of the experiment.""",
     "cont_key": "space"}
 ]
@@ -476,7 +452,6 @@ fixation_dot = visual.ShapeStim(
 
 def check_fixation(t,
                     gaze_start,
-                    gaze_stop,
                     in_hit_region,
                     dummy_mode):
     if dummy_mode:
@@ -484,6 +459,7 @@ def check_fixation(t,
         
         # for mouse, origin is center
         fix_x, fix_y = (0.0, 0.0)
+        print(g_x, g_y)
     else:
         # For ET, origin is corner
         fix_x, fix_y = (scn_width/2.0, scn_height/2.0)
@@ -496,15 +472,12 @@ def check_fixation(t,
         if not in_hit_region:
             if gaze_start == -1:
                 gaze_start = t
-                gaze_stop = -1
                 in_hit_region = True
     else:  # gaze outside the hit region, reset variables
-        if in_hit_region:
-            gaze_stop = t
-            in_hit_region = False
-            gaze_start = -1
+        in_hit_region = False
+        gaze_start = -1
 
-    return in_hit_region, gaze_start, gaze_stop
+    return in_hit_region, gaze_start
 
 
 
@@ -567,8 +540,6 @@ def rotate_fixation(ori,
                 thisExp.timestampOnFlip(win, o.name + '.stopped')
                 o.setAutoDraw(False)
 
-fixation_placeholder = keyboard.Keyboard()
-
 # --- Initialize components for Routine "question" ---
 static_prepare = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='static_prepare')
 question_voice = sound.Sound('A', secs=-1, stereo=True, hamming=True,
@@ -626,7 +597,6 @@ static_wait = clock.StaticPeriod(win=win, screenHz=expInfo['frameRate'], name='s
 
 satisfaction_aid = visual.TextStim(win=win, name='satisfaction_aid',
     text = """Speak:
-
     1     2       3       4       5
     
 Not worth                     Extremely
@@ -648,11 +618,8 @@ def run_fixate(block_trials):
     continueRoutine = True
     routineForceEnded = False
     # update component parameters for each repeat
-    fixation_placeholder.keys = []
-    fixation_placeholder.rt = []
-    _fixation_placeholder_allKeys = []
     # keep track of which components have finished
-    fixateComponents = [fixation_placeholder, fixation_cross_cardinal, fixation_dot, fixation_circle]
+    fixateComponents = [fixation_cross_cardinal, fixation_dot, fixation_circle]
     for thisComponent in fixateComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -684,16 +651,14 @@ def run_fixate(block_trials):
                       t,
                       tThisFlipGlobal)
         
-        in_hit_region, gaze_start, _ = check_fixation(tThisFlip,
+        in_hit_region, gaze_start = check_fixation(tThisFlip,
                                                     gaze_start,
-                                                    -1,
                                                     in_hit_region,
                                                     dummy_mode)
         
         if in_hit_region:
             if tThisFlip >= gaze_start + minimal_fixation_duration:
                 logging.data("Minimal fixation duration achieved")
-                thisExp.addData('fixate_start', gaze_start)
                 continueRoutine = False
         
         # check for quit (typically the Esc key)
@@ -718,12 +683,6 @@ def run_fixate(block_trials):
     for thisComponent in fixateComponents:
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
-    # check responses
-    if fixation_placeholder.keys in ['', [], None]:  # No response was made
-        fixation_placeholder.keys = None
-    block_trials.addData('fixation_placeholder.keys',fixation_placeholder.keys)
-    if fixation_placeholder.keys != None:  # we had a response
-        block_trials.addData('fixation_placeholder.rt', fixation_placeholder.rt)
     # the Routine "fixate" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
@@ -734,7 +693,6 @@ def run_question(block_trials,
     # --- Prepare to start Routine "question" ---
     continueRoutine = True
     routineForceEnded = False
-    abortTrial = False
     # update component parameters for each repeat
     # Run 'Begin Routine' code from code
     
@@ -760,8 +718,6 @@ def run_question(block_trials,
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
     frameN = -1
     
-    gaze_stop = -1
-    in_hit_region = True
     # --- Run Routine "question" ---
     while continueRoutine:
         # get current time
@@ -786,20 +742,6 @@ def run_question(block_trials,
                     frameN,
                     t,
                     tThisFlipGlobal)
-        
-        in_hit_region, _, gaze_stop = check_fixation(tThisFlip,
-                                                    -1,
-                                                    gaze_stop,
-                                                    in_hit_region,
-                                                    dummy_mode)
-        
-        if not in_hit_region:
-            if tThisFlip >= gaze_stop + minimal_fixation_duration:
-                logging.data("Fixation broken")
-                thisExp.addData('question_fixation_broken', gaze_stop)
-                abortTrial = True
-                continueRoutine = False
-        
         # start/stop question_voice
         if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration+ITI-frameTolerance:
             # keep track of start time/frame for later
@@ -914,17 +856,9 @@ def run_question(block_trials,
     # the Routine "question" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
-    return abortTrial
-
 # Play answer, collect satisfaction
 def run_answer(block_trials,
-               display_satisfaction_aid=False,
-               abortTrial=False):
-    
-    # skip if trial aborted
-    if abortTrial:
-        return abortTrial
-    
+               display_satisfaction_aid=False):
     # --- Prepare to start Routine "answer" ---
     continueRoutine = True
     routineForceEnded = False
@@ -970,19 +904,6 @@ def run_answer(block_trials,
                         frameN,
                         t,
                         tThisFlipGlobal)
-        
-        in_hit_region, _, gaze_stop = check_fixation(tThisFlip,
-                                                    -1,
-                                                    gaze_stop,
-                                                    in_hit_region,
-                                                    dummy_mode)
-        
-        if not in_hit_region:
-            if tThisFlip >= gaze_stop + minimal_fixation_duration:
-                logging.data("Fixation broken")
-                thisExp.addData('answer_fixation_broken', gaze_stop)
-                abortTrial = True
-                continueRoutine = False
 
         # start/stop answer_voice
         if answer_voice.status == NOT_STARTED and tThisFlip >= thisTrialDuration-frameTolerance:
@@ -1108,13 +1029,7 @@ def run_answer(block_trials,
     routineTimer.reset()
 
 warning_counter =  0
-def display_deadline_warning(warning_counter,
-                             abortTrial=False):
-    
-    # skip if trial aborted
-    if abortTrial:
-        return abortTrial
-    
+def display_deadline_warning(warning_counter):
     # --- Prepare to start Routine "deadline warning" ---
     continueRoutine = True
     routineForceEnded = False
@@ -1352,49 +1267,49 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-# display_instructions(instr1_text, "instr1_trials")
+display_instructions(instr1_text, "instr1_trials")
 
-# # First practice loop ----
-# # set up handler to look after randomisation of conditions etc
-# practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
-#     extraInfo=expInfo, originPath=-1,
-#     trialList=practice1_questions,
-#     seed=None, name='practice1_trials')
-# thisExp.addLoop(practice1_trials)  # add the loop to the experiment
-# thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
-# # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-# if thisWaiting_trial != None:
-#     for paramName in thisWaiting_trial:
-#         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# First practice loop ----
+# set up handler to look after randomisation of conditions etc
+practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+    extraInfo=expInfo, originPath=-1,
+    trialList=practice1_questions,
+    seed=None, name='practice1_trials')
+thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+if thisWaiting_trial != None:
+    for paramName in thisWaiting_trial:
+        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-# # Sample durations w/o replacement
-# this_block_durations = copy.copy(wait_durations)
-# shuffle(this_block_durations)
+# Sample durations w/o replacement
+this_block_durations = copy.copy(wait_durations)
+shuffle(this_block_durations)
 
-# for thisWaiting_trial in practice1_trials:
-#     currentLoop = practice1_trials
-#     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-#     if thisWaiting_trial != None:
-#         for paramName in thisWaiting_trial:
-#             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+for thisWaiting_trial in practice1_trials:
+    currentLoop = practice1_trials
+    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+    if thisWaiting_trial != None:
+        for paramName in thisWaiting_trial:
+            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-#     # Sample durations w/o replacement
-#     thisTrialDuration = this_block_durations.pop()
-#     thisExp.addData('wait_duration', thisTrialDuration)
+    # Sample durations w/o replacement
+    thisTrialDuration = this_block_durations.pop()
+    thisExp.addData('wait_duration', thisTrialDuration)
     
-#     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-#     warning_counter = display_deadline_warning(warning_counter)
+    warning_counter = display_deadline_warning(warning_counter)
 
-#     warning_counter = display_call_experimenter(warning_counter)
+    warning_counter = display_call_experimenter(warning_counter)
     
-#     run_answer(practice1_trials, display_satisfaction_aid=True)
+    run_answer(practice1_trials, display_satisfaction_aid=True)
 
-#     thisExp.nextEntry()    
-# # completed 1.0 repeats of 'practice1_trials'
+    thisExp.nextEntry()    
+# completed 1.0 repeats of 'practice1_trials'
 
-# # --- Second instruction loop ---
-# display_instructions(instr2_text, "instr2_trials")
+# --- Second instruction loop ---
+display_instructions(instr2_text, "instr2_trials")
 
 # Second practice loop ---
 # set up handler to look after randomisation of conditions etc
@@ -1426,13 +1341,13 @@ for thisWaiting_trial in practice2_trials:
 
     run_fixate(practice2_trials)
     
-    abortTrial = run_question(practice2_trials)
+    run_question(practice2_trials)
 
-    warning_counter = display_deadline_warning(warning_counter, abortTrial=abortTrial)
+    warning_counter = display_deadline_warning(warning_counter)
 
     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice2_trials, abortTrial=abortTrial)
+    run_answer(practice2_trials)
 
     thisExp.nextEntry()    
 # completed 1.0 repeats of 'practice2_trials'
