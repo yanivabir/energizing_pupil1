@@ -476,6 +476,7 @@ fixation_dot = visual.ShapeStim(
 
 def check_fixation(t,
                     gaze_start,
+                    gaze_stop,
                     in_hit_region,
                     dummy_mode):
     if dummy_mode:
@@ -483,7 +484,6 @@ def check_fixation(t,
         
         # for mouse, origin is center
         fix_x, fix_y = (0.0, 0.0)
-        print(g_x, g_y)
     else:
         # For ET, origin is corner
         fix_x, fix_y = (scn_width/2.0, scn_height/2.0)
@@ -496,12 +496,15 @@ def check_fixation(t,
         if not in_hit_region:
             if gaze_start == -1:
                 gaze_start = t
+                gaze_stop = -1
                 in_hit_region = True
     else:  # gaze outside the hit region, reset variables
-        in_hit_region = False
-        gaze_start = -1
+        if in_hit_region:
+            gaze_stop = t
+            in_hit_region = False
+            gaze_start = -1
 
-    return in_hit_region, gaze_start
+    return in_hit_region, gaze_start, gaze_stop
 
 
 
@@ -676,14 +679,16 @@ def run_fixate(block_trials):
                       t,
                       tThisFlipGlobal)
         
-        in_hit_region, gaze_start = check_fixation(tThisFlip,
+        in_hit_region, gaze_start, _ = check_fixation(tThisFlip,
                                                     gaze_start,
+                                                    -1,
                                                     in_hit_region,
                                                     dummy_mode)
         
         if in_hit_region:
             if tThisFlip >= gaze_start + minimal_fixation_duration:
                 logging.data("Minimal fixation duration achieved")
+                thisExp.addData('fixate_start', gaze_start)
                 continueRoutine = False
         
         # check for quit (typically the Esc key)
@@ -718,6 +723,7 @@ def run_question(block_trials,
     # --- Prepare to start Routine "question" ---
     continueRoutine = True
     routineForceEnded = False
+    abortTrial = False
     # update component parameters for each repeat
     # Run 'Begin Routine' code from code
     
@@ -743,6 +749,8 @@ def run_question(block_trials,
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
     frameN = -1
     
+    gaze_stop = -1
+    in_hit_region = True
     # --- Run Routine "question" ---
     while continueRoutine:
         # get current time
@@ -767,6 +775,20 @@ def run_question(block_trials,
                     frameN,
                     t,
                     tThisFlipGlobal)
+        
+        in_hit_region, _, gaze_stop = check_fixation(tThisFlip,
+                                                    -1,
+                                                    gaze_stop,
+                                                    in_hit_region,
+                                                    dummy_mode)
+        
+        if not in_hit_region:
+            if tThisFlip >= gaze_stop + minimal_fixation_duration:
+                logging.data("Fixation broken")
+                thisExp.addData('question_fixation_broken', gaze_stop)
+                abortTrial = True
+                continueRoutine = False
+        
         # start/stop question_voice
         if question_voice.status == NOT_STARTED and tThisFlip >= prepare_duration+ITI-frameTolerance:
             # keep track of start time/frame for later
@@ -881,9 +903,17 @@ def run_question(block_trials,
     # the Routine "question" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
+    return abortTrial
+
 # Play answer, collect satisfaction
 def run_answer(block_trials,
-               display_satisfaction_aid=False):
+               display_satisfaction_aid=False,
+               abortTrial=False):
+    
+    # skip if trial aborted
+    if abortTrial:
+        return abortTrial
+    
     # --- Prepare to start Routine "answer" ---
     continueRoutine = True
     routineForceEnded = False
@@ -929,6 +959,19 @@ def run_answer(block_trials,
                         frameN,
                         t,
                         tThisFlipGlobal)
+        
+        in_hit_region, _, gaze_stop = check_fixation(tThisFlip,
+                                                    -1,
+                                                    gaze_stop,
+                                                    in_hit_region,
+                                                    dummy_mode)
+        
+        if not in_hit_region:
+            if tThisFlip >= gaze_stop + minimal_fixation_duration:
+                logging.data("Fixation broken")
+                thisExp.addData('answer_fixation_broken', gaze_stop)
+                abortTrial = True
+                continueRoutine = False
 
         # start/stop answer_voice
         if answer_voice.status == NOT_STARTED and tThisFlip >= thisTrialDuration-frameTolerance:
@@ -1054,7 +1097,13 @@ def run_answer(block_trials,
     routineTimer.reset()
 
 warning_counter =  0
-def display_deadline_warning(warning_counter):
+def display_deadline_warning(warning_counter,
+                             abortTrial=False):
+    
+    # skip if trial aborted
+    if abortTrial:
+        return abortTrial
+    
     # --- Prepare to start Routine "deadline warning" ---
     continueRoutine = True
     routineForceEnded = False
@@ -1292,49 +1341,49 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-display_instructions(instr1_text, "instr1_trials")
+# display_instructions(instr1_text, "instr1_trials")
 
-# First practice loop ----
-# set up handler to look after randomisation of conditions etc
-practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
-    extraInfo=expInfo, originPath=-1,
-    trialList=practice1_questions,
-    seed=None, name='practice1_trials')
-thisExp.addLoop(practice1_trials)  # add the loop to the experiment
-thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
-# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-if thisWaiting_trial != None:
-    for paramName in thisWaiting_trial:
-        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# # First practice loop ----
+# # set up handler to look after randomisation of conditions etc
+# practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+#     extraInfo=expInfo, originPath=-1,
+#     trialList=practice1_questions,
+#     seed=None, name='practice1_trials')
+# thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+# thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+# if thisWaiting_trial != None:
+#     for paramName in thisWaiting_trial:
+#         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-# Sample durations w/o replacement
-this_block_durations = copy.copy(wait_durations)
-shuffle(this_block_durations)
+# # Sample durations w/o replacement
+# this_block_durations = copy.copy(wait_durations)
+# shuffle(this_block_durations)
 
-for thisWaiting_trial in practice1_trials:
-    currentLoop = practice1_trials
-    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-    if thisWaiting_trial != None:
-        for paramName in thisWaiting_trial:
-            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# for thisWaiting_trial in practice1_trials:
+#     currentLoop = practice1_trials
+#     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+#     if thisWaiting_trial != None:
+#         for paramName in thisWaiting_trial:
+#             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-    # Sample durations w/o replacement
-    thisTrialDuration = this_block_durations.pop()
-    thisExp.addData('wait_duration', thisTrialDuration)
+#     # Sample durations w/o replacement
+#     thisTrialDuration = this_block_durations.pop()
+#     thisExp.addData('wait_duration', thisTrialDuration)
     
-    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+#     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-    warning_counter = display_deadline_warning(warning_counter)
+#     warning_counter = display_deadline_warning(warning_counter)
 
-    warning_counter = display_call_experimenter(warning_counter)
+#     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice1_trials, display_satisfaction_aid=True)
+#     run_answer(practice1_trials, display_satisfaction_aid=True)
 
-    thisExp.nextEntry()    
-# completed 1.0 repeats of 'practice1_trials'
+#     thisExp.nextEntry()    
+# # completed 1.0 repeats of 'practice1_trials'
 
-# --- Second instruction loop ---
-display_instructions(instr2_text, "instr2_trials")
+# # --- Second instruction loop ---
+# display_instructions(instr2_text, "instr2_trials")
 
 # Second practice loop ---
 # set up handler to look after randomisation of conditions etc
@@ -1366,13 +1415,13 @@ for thisWaiting_trial in practice2_trials:
 
     run_fixate(practice2_trials)
     
-    run_question(practice2_trials)
+    abortTrial = run_question(practice2_trials)
 
-    warning_counter = display_deadline_warning(warning_counter)
+    warning_counter = display_deadline_warning(warning_counter, abortTrial=abortTrial)
 
     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice2_trials)
+    run_answer(practice2_trials, abortTrial=abortTrial)
 
     thisExp.nextEntry()    
 # completed 1.0 repeats of 'practice2_trials'
