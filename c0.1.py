@@ -80,36 +80,48 @@ for c in categories:
 instr1_text = [
     {"text_page": """Thank you for participating today. 
 You will now complete a computer task about curiosity. 
+
 In this task, you will listen to a series of trivia questions about animals, the arts, food, or geography.
+
 Press 'd' to read the instructions for this task."""},
  {"text_page": """For each question, you must decide if you want to know the answer to the question.
+
 If you want to find out the answer, you will have to wait a certain amount of time. The required waiting period for each answer will be read out to you after you hear the question.
 If you do not want to wait to see the answer, you can choose to skip the question.
 If you are 100% certain that you already know the answer to the question, you may indicate that you already know it.
+
 If you choose to skip or indicate that you know the answer, you will NOT see the answer to the question.
+
 Press 'd' to continue."""},
 {"text_page":["""To wait for answer, you will press the 'd' key.
 To skip the answer, press the 'g' key.
 If you 100% know the answer, press the 'j' key.
+
 Refer to this diagram below to make sure you understand which key to press.
-                     Wait                          Skip                        Know""",
+
+                    Wait                              Skip                              Know""",
 """
-          ┏━━━┓           ┏━━━┓           ┏━━━┓
-          ┃ D ┃           ┃ G ┃           ┃ J ┃
-          ┗━━━┛           ┗━━━┛           ┗━━━┛
+        ┏━━━┓           ┏━━━┓           ┏━━━┓
+        ┃ D ┃           ┃ G ┃           ┃ J ┃
+        ┗━━━┛           ┗━━━┛           ┗━━━┛
 """,
 """Press 'd' to continue."""],
 "fonts": ['Arial', 'Menlo', 'Arial'],
-"poss": [(0.0, 0.2), (0.0, 0.0), (0.0, -0.15)]},
+"poss": [(0.0, 3.5), (0.0, 0.0), (0.0, -3)]},
 {"text_page": """If you choose to wait for a question, you will be asked to rate if the answer was worth waiting for on as scale of 1 to 5. 
+
 If the answer was not worth the wait, it should be rated as 1. If it was extremely worth it, rate it as 5. Use numbers 2-4 for annything in between.
+
 Press 'd' to continue."""},
 {"text_page": """To rate the answer, please speak the number you choose ("one", "two", "three", "four", or "five") into the microphone.
 Please only use whole numbers, no fractions.
+
 Press 'd' to continue."""},
 {"text_page": f"""The task will continue for {int(waiting_task_duration / 60)} minutes. The task takes the same amount of time regardless of how many questions you choose to skip or wait for, so please base your decisions on how interested you are in learning the answers.
+
 Press 'd' to continue."""},
 {"text_page": """You will now complete a short practice to get comfortable with the task. Please use this time to get used to pressing the different buttons, to rating the answers out loud, and to the amount of time you have to respond to the different prompts.
+
 Press 'd' to start the practice."""}
 ]
 
@@ -262,7 +274,7 @@ if not os.path.isdir(micRecFolder):
 # --- Setup the Window ---
 mon = monitors.Monitor('testMonitor')
 win = visual.Window(
-    fullscr=False, screen=0, 
+    fullscr=True, screen=0, 
     winType='pyglet', allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True, 
@@ -287,7 +299,7 @@ defaultKeyboard = keyboard.Keyboard(backend='ptb')
 instr_max_component = max([len(t["text_page"]) for t in instr1_text + instr2_text if type(t["text_page"]) is list])
 text_instr = [visual.TextStim(win=win, name=f'text_instr_{t}',
     font='Arial',
-    pos=(0, 0), height=0.03, wrapWidth=None, ori=0.0, 
+    pos=(0, 0), height=0.7, wrapWidth=24, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     alignText='left',
@@ -559,7 +571,7 @@ choice_aid = visual.TextStim(win=win, name='choice_aid',
     font='Arial',
     alignText = 'center',
     anchorHoriz = 'center',
-    pos=(0.02, -0.1), height=0.03, wrapWidth=None, ori=0.0, 
+    pos=(0.02, -0.1), height=0.7, wrapWidth=24, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     antialias=True,
@@ -569,7 +581,7 @@ warning_msg = visual.TextStim(win=win, name='deadline_warning',
     font='Arial',
     alignText = 'center',
     anchorHoriz = 'center',
-    pos=(0.02, -0.1), height=0.03, wrapWidth=None, ori=0.0, 
+    pos=(0.02, -0.1), height=0.7, wrapWidth=24, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     antialias=True,
@@ -580,7 +592,7 @@ call_experimenter_msg = visual.TextStim(win=win, name='call_experimenter',
     font='Arial',
     alignText = 'center',
     anchorHoriz = 'center',
-    pos=(0.02, -0.1), height=0.03, wrapWidth=None, ori=0.0, 
+    pos=(0.02, -0.1), height=0.7, wrapWidth=24, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     antialias=True,
@@ -606,7 +618,7 @@ Not worth                     Extremely
     font='Arial',
     alignText = 'center',
     anchorHoriz = 'center',
-    pos=(0.01, -0.2), height=0.03, wrapWidth=None, ori=0.0, 
+    pos=(0.01, -0.2), height=0.7, wrapWidth=24, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     antialias=True,
@@ -1304,7 +1316,7 @@ def display_call_experimenter(warning_counter):
 text = visual.TextStim(win=win, name='text',
     text='',
     font='Arial',
-    pos=(0, 0), height=0.04, wrapWidth=None, ori=0.0, 
+    pos=(0, 0), height=0.7, wrapWidth=24, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     depth=0.0);
@@ -1326,49 +1338,49 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-# display_instructions(instr1_text, "instr1_trials")
+display_instructions(instr1_text, "instr1_trials")
 
-# # First practice loop ----
-# # set up handler to look after randomisation of conditions etc
-# practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
-#     extraInfo=expInfo, originPath=-1,
-#     trialList=practice1_questions,
-#     seed=None, name='practice1_trials')
-# thisExp.addLoop(practice1_trials)  # add the loop to the experiment
-# thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
-# # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-# if thisWaiting_trial != None:
-#     for paramName in thisWaiting_trial:
-#         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# First practice loop ----
+# set up handler to look after randomisation of conditions etc
+practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+    extraInfo=expInfo, originPath=-1,
+    trialList=practice1_questions,
+    seed=None, name='practice1_trials')
+thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+if thisWaiting_trial != None:
+    for paramName in thisWaiting_trial:
+        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-# # Sample durations w/o replacement
-# this_block_durations = copy.copy(wait_durations)
-# shuffle(this_block_durations)
+# Sample durations w/o replacement
+this_block_durations = copy.copy(wait_durations)
+shuffle(this_block_durations)
 
-# for thisWaiting_trial in practice1_trials:
-#     currentLoop = practice1_trials
-#     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-#     if thisWaiting_trial != None:
-#         for paramName in thisWaiting_trial:
-#             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+for thisWaiting_trial in practice1_trials:
+    currentLoop = practice1_trials
+    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+    if thisWaiting_trial != None:
+        for paramName in thisWaiting_trial:
+            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-#     # Sample durations w/o replacement
-#     thisTrialDuration = this_block_durations.pop()
-#     thisExp.addData('wait_duration', thisTrialDuration)
+    # Sample durations w/o replacement
+    thisTrialDuration = this_block_durations.pop()
+    thisExp.addData('wait_duration', thisTrialDuration)
     
-#     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-#     warning_counter = display_deadline_warning(warning_counter)
+    warning_counter = display_deadline_warning(warning_counter)
 
-#     warning_counter = display_call_experimenter(warning_counter)
+    warning_counter = display_call_experimenter(warning_counter)
     
-#     run_answer(practice1_trials, thisTrialDuration, display_satisfaction_aid=True)
+    run_answer(practice1_trials, thisTrialDuration, display_satisfaction_aid=True)
 
-#     thisExp.nextEntry()    
-# # completed 1.0 repeats of 'practice1_trials'
+    thisExp.nextEntry()    
+# completed 1.0 repeats of 'practice1_trials'
 
-# # --- Second instruction loop ---
-# display_instructions(instr2_text, "instr2_trials")
+# --- Second instruction loop ---
+display_instructions(instr2_text, "instr2_trials")
 
 # Second practice loop ---
 # set up handler to look after randomisation of conditions etc
