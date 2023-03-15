@@ -548,7 +548,8 @@ fixation_dot = visual.ShapeStim(
     lineWidth=0.0,     colorSpace='rgb',  lineColor='black', fillColor='black',
     opacity=None, depth=-1.0, interpolate=True)
 
-def check_fixation(t,
+def check_fixation(old_sample,
+                    t,
                     gaze_start,
                     gaze_stop,
                     in_hit_region,
@@ -559,26 +560,45 @@ def check_fixation(t,
         # for mouse, origin is center
         fix_x, fix_y = (0.0, 0.0)
     else:
+        # get a reference to the currently active EyeLink connection
+        el_tracker = pylink.getEYELINK()
+
+        # abort the current trial if the tracker is no longer recording
+        error = el_tracker.isRecording()
+        if error is not pylink.TRIAL_OK:
+            el_tracker.sendMessage('tracker_disconnected')
+            abort_trial()
+            return error
+        
+        #Do we have a sample in the sample buffer?
+        # and does it differ from the one we've seen before?
+        new_sample = el_tracker.getNewestSample()
+        if new_sample is not None:
+            if eye_used == 1 and new_sample.isRightSample():
+                g_x, g_y = new_sample.getRightEye().getGaze()
+            if eye_used == 0 and new_sample.isLeftSample():
+                g_x, g_y = new_sample.getLeftEye().getGaze()
+
         # For ET, origin is corner
         fix_x, fix_y = (scn_width/2.0, scn_height/2.0)
 
     # return true if the current gaze position is
     # in a 120 x 120 pixels region around the screen centered
-    # 
-    if fabs(g_x - fix_x) < fixation_distance and fabs(g_y - fix_y) < fixation_distance:
-        # record gaze start time
-        if not in_hit_region:
-            if gaze_start == -1:
-                gaze_start = t
-                in_hit_region = True
-    else:  # gaze outside the hit region, reset variables
-        if in_hit_region:
-            logging.data("Fixation borken")
-            gaze_stop = t
-            in_hit_region = False
-            gaze_start = -1
+    if dummy_mode or old_sample is None or new_sample.getTime() != old_sample.getTime():
+        if fabs(g_x - fix_x) < fixation_distance and fabs(g_y - fix_y) < fixation_distance:
+            # record gaze start time
+            if not in_hit_region:
+                if gaze_start == -1:
+                    gaze_start = t
+                    in_hit_region = True
+        else:  # gaze outside the hit region, reset variables
+            if in_hit_region:
+                logging.data("Fixation borken")
+                gaze_stop = t
+                in_hit_region = False
+                gaze_start = -1
 
-    return in_hit_region, gaze_start, gaze_stop
+    return in_hit_region, gaze_start, gaze_stop, new_sample
 
 
 
@@ -709,6 +729,119 @@ Not worth                     Extremely
     antialias=True,
     depth=0.0)
 
+def initiate_et_trial(trial_index,
+                      questionId):
+    # get a reference to the currently active EyeLink connection
+    el_tracker = pylink.getEYELINK()
+
+    # put the tracker in the offline mode first
+    el_tracker.setOfflineMode()
+
+    # clear the host screen before we draw the backdrop
+    el_tracker.sendCommand('clear_screen 0')
+
+    # OPTIONAL: draw landmarks and texts on the Host screen
+    # In addition to backdrop image, You may draw simples on the Host PC to use
+    # as landmarks. For illustration purpose, here we draw some texts and a box
+    # For a list of supported draw commands, see the "COMMANDS.INI" file on the
+    # Host PC (under /elcl/exe)
+    left = int(scn_width/2.0) - 60
+    top = int(scn_height/2.0) - 60
+    right = int(scn_width/2.0) + 60
+    bottom = int(scn_height/2.0) + 60
+    draw_cmd = 'draw_filled_box %d %d %d %d 1' % (left, top, right, bottom)
+    el_tracker.sendCommand(draw_cmd)
+
+    # send a "TRIALID" message to mark the start of a trial, see Data
+    # Viewer User Manual, "Protocol for EyeLink Data to Viewer Integration"
+    el_tracker.sendMessage('TRIALID %d' % trial_index)
+    el_tracker.sendMessage('TRIALVAR questionId %s' % questionId)
+
+    # record_status_message : show some info on the Host PC
+    # here we show how many trial has been tested
+    status_msg = 'TRIAL number %d' % trial_index
+    el_tracker.sendCommand("record_status_message '%s'" % status_msg)
+    status_msg = 'QUESTION id %s' % questionId
+    el_tracker.sendCommand("record_status_message '%s'" % status_msg)
+
+    # put tracker in idle/offline mode before recording
+    el_tracker.setOfflineMode()
+
+    # Start recording
+    # arguments: sample_to_file, events_to_file, sample_over_link,
+    # event_over_link (1-yes, 0-no)
+    try:
+        el_tracker.startRecording(1, 1, 1, 1)
+    except RuntimeError as error:
+        print("ERROR:", error)
+        abort_trial()
+
+    # Allocate some time for the tracker to cache some samples
+    pylink.pumpDelay(100)
+
+    # get a reference to the currently active EyeLink connection
+    el_tracker = pylink.getEYELINK()
+
+    # put the tracker in the offline mode first
+    el_tracker.setOfflineMode()
+
+    # clear the host screen before we draw the backdrop
+    el_tracker.sendCommand('clear_screen 0')
+
+    # OPTIONAL: draw landmarks and texts on the Host screen
+    # In addition to backdrop image, You may draw simples on the Host PC to use
+    # as landmarks. For illustration purpose, here we draw some texts and a box
+    # For a list of supported draw commands, see the "COMMANDS.INI" file on the
+    # Host PC (under /elcl/exe)
+    left = int(scn_width/2.0) - 60
+    top = int(scn_height/2.0) - 60
+    right = int(scn_width/2.0) + 60
+    bottom = int(scn_height/2.0) + 60
+    draw_cmd = 'draw_filled_box %d %d %d %d 1' % (left, top, right, bottom)
+    el_tracker.sendCommand(draw_cmd)
+
+    # send a "TRIALID" message to mark the start of a trial, see Data
+    # Viewer User Manual, "Protocol for EyeLink Data to Viewer Integration"
+    el_tracker.sendMessage('TRIALID %d' % trial_index)
+    el_tracker.sendMessage('TRIALVAR questionId %s' % questionId)
+
+    # record_status_message : show some info on the Host PC
+    # here we show how many trial has been tested
+    status_msg = 'TRIAL number %d' % trial_index
+    el_tracker.sendCommand("record_status_message '%s'" % status_msg)
+    status_msg = 'QUESTION id %s' % questionId
+    el_tracker.sendCommand("record_status_message '%s'" % status_msg)
+
+    # put tracker in idle/offline mode before recording
+    el_tracker.setOfflineMode()
+
+    # Start recording
+    # arguments: sample_to_file, events_to_file, sample_over_link,
+    # event_over_link (1-yes, 0-no)
+    try:
+        el_tracker.startRecording(1, 1, 1, 1)
+    except RuntimeError as error:
+        print("ERROR:", error)
+        abort_trial()
+        return pylink.TRIAL_ERROR
+
+    # Allocate some time for the tracker to cache some samples
+    pylink.pumpDelay(100)
+
+    # determine which eye(s) is/are available
+    # 0- left, 1-right, 2-binocular
+    eye_used = el_tracker.eyeAvailable()
+    if eye_used == 1:
+        el_tracker.sendMessage("EYE_USED 1 RIGHT")
+    elif eye_used == 0 or eye_used == 2:
+        el_tracker.sendMessage("EYE_USED 0 LEFT")
+        eye_used = 0
+    else:
+        print("Error in getting the eye information!")
+        return pylink.TRIAL_ERROR
+    
+    return eye_used
+
 # --- Functions for calling routines "fixate", "question", "answer" ---
 # Start trial, wait for fixation
 def run_fixate(block_trials):
@@ -732,6 +865,11 @@ def run_fixate(block_trials):
     
     gaze_start = -1
     in_hit_region = False
+    old_sample = None
+
+    # get a reference to the currently active EyeLink connection
+    el_tracker = pylink.getEYELINK()
+
     # --- Run Routine "fixate" ---
     while continueRoutine:
         # get current time
@@ -749,7 +887,8 @@ def run_fixate(block_trials):
                       t,
                       tThisFlipGlobal)
         
-        in_hit_region, gaze_start, _ = check_fixation(tThisFlip,
+        in_hit_region, gaze_start, _, old_sample = check_fixation(old_sample,
+                                                    tThisFlip,
                                                     gaze_start,
                                                     -1,
                                                     in_hit_region,
@@ -1423,49 +1562,49 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-display_instructions(instr1_text, "instr1_trials")
+# display_instructions(instr1_text, "instr1_trials")
 
-# First practice loop ----
-# set up handler to look after randomisation of conditions etc
-practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
-    extraInfo=expInfo, originPath=-1,
-    trialList=practice1_questions,
-    seed=None, name='practice1_trials')
-thisExp.addLoop(practice1_trials)  # add the loop to the experiment
-thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
-# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-if thisWaiting_trial != None:
-    for paramName in thisWaiting_trial:
-        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# # First practice loop ----
+# # set up handler to look after randomisation of conditions etc
+# practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+#     extraInfo=expInfo, originPath=-1,
+#     trialList=practice1_questions,
+#     seed=None, name='practice1_trials')
+# thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+# thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+# if thisWaiting_trial != None:
+#     for paramName in thisWaiting_trial:
+#         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-# Sample durations w/o replacement
-this_block_durations = copy.copy(wait_durations)
-shuffle(this_block_durations)
+# # Sample durations w/o replacement
+# this_block_durations = copy.copy(wait_durations)
+# shuffle(this_block_durations)
 
-for thisWaiting_trial in practice1_trials:
-    currentLoop = practice1_trials
-    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-    if thisWaiting_trial != None:
-        for paramName in thisWaiting_trial:
-            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# for thisWaiting_trial in practice1_trials:
+#     currentLoop = practice1_trials
+#     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+#     if thisWaiting_trial != None:
+#         for paramName in thisWaiting_trial:
+#             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-    # Sample durations w/o replacement
-    thisTrialDuration = this_block_durations.pop()
-    thisExp.addData('wait_duration', thisTrialDuration)
+#     # Sample durations w/o replacement
+#     thisTrialDuration = this_block_durations.pop()
+#     thisExp.addData('wait_duration', thisTrialDuration)
     
-    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+#     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-    warning_counter = display_deadline_warning(warning_counter)
+#     warning_counter = display_deadline_warning(warning_counter)
 
-    warning_counter = display_call_experimenter(warning_counter)
+#     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice1_trials, thisTrialDuration, display_satisfaction_aid=True)
+#     run_answer(practice1_trials, thisTrialDuration, display_satisfaction_aid=True)
 
-    thisExp.nextEntry()    
-# completed 1.0 repeats of 'practice1_trials'
+#     thisExp.nextEntry()    
+# # completed 1.0 repeats of 'practice1_trials'
 
-# --- Second instruction loop ---
-display_instructions(instr2_text, "instr2_trials")
+# # --- Second instruction loop ---
+# display_instructions(instr2_text, "instr2_trials")
 
 # Second practice loop ---
 # set up handler to look after randomisation of conditions etc
@@ -1484,7 +1623,7 @@ if thisWaiting_trial != None:
 this_block_durations = copy.copy(wait_durations)
 shuffle(this_block_durations)
 
-for thisWaiting_trial in practice2_trials:
+for trial_index, thisWaiting_trial in enumerate(practice2_trials):
     currentLoop = practice2_trials
     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
     if thisWaiting_trial != None:
@@ -1494,6 +1633,9 @@ for thisWaiting_trial in practice2_trials:
     # Sample durations w/o replacement
     thisTrialDuration = this_block_durations.pop()
     thisExp.addData('wait_duration', thisTrialDuration)
+
+    eye_used = initiate_et_trial(trial_index,
+                      questionId)
 
     run_fixate(practice2_trials)
     
@@ -1505,7 +1647,6 @@ for thisWaiting_trial in practice2_trials:
     
     a_sum_in_region, a_frameN = run_answer(practice2_trials, thisTrialDuration)
 
-    print((q_sum_in_region + a_sum_in_region) / (q_frameN + a_frameN))
     if (q_sum_in_region + a_sum_in_region) / (q_frameN + a_frameN) < minimum_fixation_proportion:
         warning_counter = display_fixation_warning(warning_counter)
 
