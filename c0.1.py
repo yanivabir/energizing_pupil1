@@ -13,6 +13,8 @@ If you publish work using this script the most relevant publication is:
 from psychopy import locale_setup
 from psychopy import prefs
 prefs.hardware['audioLib'] = 'ptb'
+prefs.hardware['audioLatencyMode'] = 3
+prefs.hardware['audioDevice'] = 'Scarlett Solo USB: Audio (hw:1,0)'
 from psychopy import sound, gui, visual, core, data, event, logging, clock, colors, layout, monitors
 from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
