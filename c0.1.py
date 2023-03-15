@@ -39,6 +39,7 @@ choice_deadline = 3.0
 satisfaction_duration  =  3.5
 minimal_answer_epoch = 2.2
 minimal_fixation_duration = 0.5
+minimum_fixation_proportion = 0.75
 fixation_distance = 60 # in pixels. change to degrees
 instructions_gap = 0.2
 waiting_task_duration = 1*60 #40*60
@@ -261,7 +262,7 @@ if not os.path.isdir(micRecFolder):
 # --- Setup the Window ---
 mon = monitors.Monitor('testMonitor')
 win = visual.Window(
-    fullscr=True, screen=0, 
+    fullscr=False, screen=0, 
     winType='pyglet', allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True, 
@@ -564,10 +565,7 @@ choice_aid = visual.TextStim(win=win, name='choice_aid',
     antialias=True,
     depth=0.0)
 
-deadline_warning_msg = visual.TextStim(win=win, name='deadline_warning',
-    text = """Please respond more quickly
-    
-Press 'd' to continue""",
+warning_msg = visual.TextStim(win=win, name='deadline_warning',
     font='Arial',
     alignText = 'center',
     anchorHoriz = 'center',
@@ -872,6 +870,8 @@ def run_question(block_trials,
     # the Routine "question" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
+    return sum_in_hit_region, frameN
+
 # Play answer, collect satisfaction
 def run_answer(block_trials,
                thisTrialDuration,
@@ -1058,29 +1058,19 @@ def run_answer(block_trials,
 
     # the Routine "answer" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
+    
+    return sum_in_hit_region, frameN
 
-warning_counter =  0
-def display_deadline_warning(warning_counter):
-    # --- Prepare to start Routine "deadline warning" ---
+def display_warning():
     continueRoutine = True
     routineForceEnded = False
-    # update component parameters for each repeat
-
-    # Check whether warning needs to be given
-    if choice.keys != None or warning_counter >= max_warnings:
-        return warning_counter
-    
-    # Update warning counter
-    warning_counter += 1
-    thisExp.addData("n_warnings", warning_counter)
-    logging.data("Choice deadline missed")
 
     key_resp.keys = []
     key_resp.rt = []
     _key_resp_allKeys = []
 
     # keep track of which components have finished
-    deadlineComponents = [deadline_warning_msg, key_resp]
+    deadlineComponents = [warning_msg, key_resp]
     for thisComponent in deadlineComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -1102,15 +1092,15 @@ def display_deadline_warning(warning_counter):
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
 
-        if deadline_warning_msg.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
+        if warning_msg.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
             # keep track of start time/frame for later
-            deadline_warning_msg.frameNStart = frameN  # exact frame index
-            deadline_warning_msg.tStart = t  # local t and not account for scr refresh
-            deadline_warning_msg.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(deadline_warning_msg, 'tStartRefresh')  # time at next scr refresh
+            warning_msg.frameNStart = frameN  # exact frame index
+            warning_msg.tStart = t  # local t and not account for scr refresh
+            warning_msg.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(warning_msg, 'tStartRefresh')  # time at next scr refresh
             # add timestamp to datafile
             thisExp.timestampOnFlip(win, 'deadline_warning.started')
-            deadline_warning_msg.setAutoDraw(True)
+            warning_msg.setAutoDraw(True)
 
         # *key_resp* updates
         waitOnFlip = False
@@ -1162,8 +1152,46 @@ def display_deadline_warning(warning_counter):
 
     # the Routine "deadline_warning" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
+    
+warning_counter =  0
+def display_deadline_warning(warning_counter):
+    # --- Prepare to start Routine "deadline warning" ---
+    # Check whether warning needs to be given
+    if choice.keys != None or warning_counter >= max_warnings:
+        return warning_counter
+    
+    # Update warning counter
+    warning_counter += 1
+    thisExp.addData("n_warnings", warning_counter)
+    logging.data("Choice deadline missed")
+
+    warning_msg.text = """Please respond more quickly.
+    
+Press the 'd' key to continue."""
+
+    display_warning()
 
     return warning_counter
+
+def display_fixation_warning(warning_counter):
+    # --- Prepare to start Routine "fixation warning" ---
+    
+    if warning_counter >= max_warnings:
+        return warning_counter
+    
+    # Update warning counter
+    warning_counter += 1
+    thisExp.addData("n_warnings", warning_counter)
+    logging.data("Poor fixation on last trial")
+
+    warning_msg.text = """Please keep your gaze on the target.
+    
+Press the 'd' key to continue."""
+
+    display_warning()
+
+    return warning_counter
+
 
 def display_call_experimenter(warning_counter):
     # --- Prepare to start Routine "call experimenter" ---
@@ -1171,7 +1199,7 @@ def display_call_experimenter(warning_counter):
     routineForceEnded = False
     # update component parameters for each repeat
     # Run 'Begin Routine' code from conditional_answer
-    if warning_counter < max_warnings or choice.keys != None:
+    if warning_counter < max_warnings:
         return warning_counter
 
     # Update warning counter
@@ -1372,13 +1400,19 @@ for thisWaiting_trial in practice2_trials:
 
     run_fixate(practice2_trials)
     
-    run_question(practice2_trials)
+    q_sum_in_region, q_frameN = run_question(practice2_trials)
 
     warning_counter = display_deadline_warning(warning_counter)
 
     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice2_trials, thisTrialDuration)
+    a_sum_in_region, a_frameN = run_answer(practice2_trials, thisTrialDuration)
+
+    print((q_sum_in_region + a_sum_in_region) / (q_frameN + a_frameN))
+    if (q_sum_in_region + a_sum_in_region) / (q_frameN + a_frameN) < minimum_fixation_proportion:
+        warning_counter = display_fixation_warning(warning_counter)
+
+        warning_counter = display_call_experimenter(warning_counter)
 
     thisExp.nextEntry()    
 # completed 1.0 repeats of 'practice2_trials'
