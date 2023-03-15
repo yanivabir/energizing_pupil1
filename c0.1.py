@@ -472,10 +472,10 @@ def check_fixation(t,
         if not in_hit_region:
             if gaze_start == -1:
                 gaze_start = t
-                gaze_stop = -1
                 in_hit_region = True
     else:  # gaze outside the hit region, reset variables
         if in_hit_region:
+            logging.data("Fixation borken")
             gaze_stop = t
             in_hit_region = False
             gaze_start = -1
@@ -616,7 +616,7 @@ Not worth                     Extremely
 
 # --- Functions for calling routines "fixate", "question", "answer" ---
 # Start trial, wait for fixation
-def srun_fixate(block_trials):
+def run_fixate(block_trials):
     # --- Prepare to start Routine "fixate" ---
     continueRoutine = True
     routineForceEnded = False
@@ -722,6 +722,8 @@ def run_question(block_trials,
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
     frameN = -1
     
+    in_hit_region = True
+    sum_in_hit_region = 0
     # --- Run Routine "question" ---
     while continueRoutine:
         # get current time
@@ -730,6 +732,9 @@ def run_question(block_trials,
         tThisFlipGlobal = win.getFutureFlipTime(clock=None)
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
+
+        in_hit_region, _, _ = check_fixation(tThisFlip, -1, -1, in_hit_region, dummy_mode)
+        sum_in_hit_region += in_hit_region
         
         # *fixation_prepare* updates
         draw_fixation(45.0,
@@ -857,11 +862,19 @@ def run_question(block_trials,
     block_trials.addData('choice.keys',choice.keys)
     if choice.keys != None:  # we had a response
         block_trials.addData('choice.rt', choice.rt)
+
+    # Record percentage fixating
+    mean_in_hit_region =  sum_in_hit_region / frameN
+    block_trials.addData('question.sum_frames_fixating', sum_in_hit_region)
+    block_trials.addData('question.total_frames', frameN)
+    logging.exp(f"Fixated during this question {mean_in_hit_region * 100}% of the time")
+
     # the Routine "question" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
 # Play answer, collect satisfaction
 def run_answer(block_trials,
+               thisTrialDuration,
                display_satisfaction_aid=False):
     # --- Prepare to start Routine "answer" ---
     continueRoutine = True
@@ -886,7 +899,10 @@ def run_answer(block_trials,
     t = 0
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
     frameN = -1
-    
+
+    in_hit_region = True
+    sum_in_hit_region = 0
+
     # --- Run Routine "answer" ---
     while continueRoutine:
         # get current time
@@ -894,7 +910,10 @@ def run_answer(block_trials,
         tThisFlip = win.getFutureFlipTime(clock=routineTimer)
         tThisFlipGlobal = win.getFutureFlipTime(clock=None)
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-        # update/draw components on each frame
+
+        # Get fixation status
+        in_hit_region, _, _ = check_fixation(tThisFlip, -1, -1, in_hit_region, dummy_mode)
+        sum_in_hit_region += in_hit_region
         
         # *fixation_wait* updates
         draw_fixation(45.0, 0.0, 
@@ -902,6 +921,7 @@ def run_answer(block_trials,
                       frameN,
                       t,
                       tThisFlipGlobal)
+        
         # *fixation_answer* updates
         rotate_fixation(0.0, thisTrialDuration, 
                         tThisFlip,
@@ -1029,6 +1049,13 @@ def run_answer(block_trials,
         config=None
     )
     block_trials.addData('mic.clip', os.path.join(micRecFolder, 'recording_mic_%s.wav' % tag))
+
+    # Record percentage fixating
+    mean_in_hit_region =  sum_in_hit_region / frameN
+    block_trials.addData('answer.sum_frames_fixating', sum_in_hit_region)
+    block_trials.addData('answer.total_frames', frameN)
+    logging.exp(f"Fixated during this answer {mean_in_hit_region * 100}% of the time")
+
     # the Routine "answer" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
 
@@ -1271,49 +1298,49 @@ globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
 # --- First instruction loop ---
-display_instructions(instr1_text, "instr1_trials")
+# display_instructions(instr1_text, "instr1_trials")
 
-# First practice loop ----
-# set up handler to look after randomisation of conditions etc
-practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
-    extraInfo=expInfo, originPath=-1,
-    trialList=practice1_questions,
-    seed=None, name='practice1_trials')
-thisExp.addLoop(practice1_trials)  # add the loop to the experiment
-thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
-# abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-if thisWaiting_trial != None:
-    for paramName in thisWaiting_trial:
-        exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# # First practice loop ----
+# # set up handler to look after randomisation of conditions etc
+# practice1_trials = data.TrialHandler(nReps=1.0, method='random', 
+#     extraInfo=expInfo, originPath=-1,
+#     trialList=practice1_questions,
+#     seed=None, name='practice1_trials')
+# thisExp.addLoop(practice1_trials)  # add the loop to the experiment
+# thisWaiting_trial = practice1_trials.trialList[0]  # so we can initialise stimuli with some values
+# # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+# if thisWaiting_trial != None:
+#     for paramName in thisWaiting_trial:
+#         exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-# Sample durations w/o replacement
-this_block_durations = copy.copy(wait_durations)
-shuffle(this_block_durations)
+# # Sample durations w/o replacement
+# this_block_durations = copy.copy(wait_durations)
+# shuffle(this_block_durations)
 
-for thisWaiting_trial in practice1_trials:
-    currentLoop = practice1_trials
-    # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
-    if thisWaiting_trial != None:
-        for paramName in thisWaiting_trial:
-            exec('{} = thisWaiting_trial[paramName]'.format(paramName))
+# for thisWaiting_trial in practice1_trials:
+#     currentLoop = practice1_trials
+#     # abbreviate parameter names if possible (e.g. rgb = thisWaiting_trial.rgb)
+#     if thisWaiting_trial != None:
+#         for paramName in thisWaiting_trial:
+#             exec('{} = thisWaiting_trial[paramName]'.format(paramName))
 
-    # Sample durations w/o replacement
-    thisTrialDuration = this_block_durations.pop()
-    thisExp.addData('wait_duration', thisTrialDuration)
+#     # Sample durations w/o replacement
+#     thisTrialDuration = this_block_durations.pop()
+#     thisExp.addData('wait_duration', thisTrialDuration)
     
-    run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
+#     run_question(practice1_trials, ITI=ITI, display_choice_aid=True)
 
-    warning_counter = display_deadline_warning(warning_counter)
+#     warning_counter = display_deadline_warning(warning_counter)
 
-    warning_counter = display_call_experimenter(warning_counter)
+#     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice1_trials, display_satisfaction_aid=True)
+#     run_answer(practice1_trials, thisTrialDuration, display_satisfaction_aid=True)
 
-    thisExp.nextEntry()    
-# completed 1.0 repeats of 'practice1_trials'
+#     thisExp.nextEntry()    
+# # completed 1.0 repeats of 'practice1_trials'
 
-# --- Second instruction loop ---
-display_instructions(instr2_text, "instr2_trials")
+# # --- Second instruction loop ---
+# display_instructions(instr2_text, "instr2_trials")
 
 # Second practice loop ---
 # set up handler to look after randomisation of conditions etc
@@ -1351,7 +1378,7 @@ for thisWaiting_trial in practice2_trials:
 
     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(practice2_trials)
+    run_answer(practice2_trials, thisTrialDuration)
 
     thisExp.nextEntry()    
 # completed 1.0 repeats of 'practice2_trials'
@@ -1397,7 +1424,7 @@ for thisWaiting_trial in waiting_trials:
 
     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(waiting_trials)
+    run_answer(waiting_trials, thisTrialDuration)
 
     thisExp.nextEntry()    
 # completed 1.0 repeats of 'waiting_trials'
