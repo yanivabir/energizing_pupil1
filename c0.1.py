@@ -44,7 +44,7 @@ satisfaction_duration  =  3.5
 minimal_answer_epoch = 2.2
 minimal_fixation_duration = 0.5
 minimum_fixation_proportion = 0.75
-fixation_distance = 60 # in pixels. change to degrees
+fixation_distance_deg = 2 # 
 instructions_gap = 0.2
 waiting_task_duration = 1*60 #40*60
 wait_durations = [3, 6, 9, 12]
@@ -273,7 +273,7 @@ el_tracker.sendCommand("link_sample_data = %s" % link_sample_flags)
 if eyelink_ver > 2:
     el_tracker.sendCommand("sample_rate 500")
 # Choose a calibration type, H3, HV3, HV5, HV13 (HV = horizontal/vertical),
-el_tracker.sendCommand("calibration_type = HV9")
+el_tracker.sendCommand("calibration_type = HV5")
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -294,7 +294,7 @@ if not os.path.isdir(micRecFolder):
     os.mkdir(micRecFolder)
 
 # --- Setup the Window ---
-mon = monitors.Monitor('testMonitor')
+mon = monitors.Monitor('testMonitor', width=59.5, distance=65)
 win = visual.Window(
     fullscr=True, screen=0, 
     winType='pyglet', allowStencil=False,
@@ -302,6 +302,8 @@ win = visual.Window(
     blendMode='avg', useFBO=True, 
     units='pix')
 scn_width, scn_height = win.size
+fixation_distance = deg2pix(fixation_distance_deg, mon)
+
 
 # Pass the display pixel coordinates (left, top, right, bottom) to the tracker
 # see the EyeLink Installation Guide, "Customizing Screen Settings"
@@ -893,6 +895,8 @@ def run_fixate(block_trials):
                                                     -1,
                                                     in_hit_region,
                                                     dummy_mode)
+        
+        print(in_hit_region, old_sample)
         
         if in_hit_region:
             if tThisFlip >= gaze_start + minimal_fixation_duration:
