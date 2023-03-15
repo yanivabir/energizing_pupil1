@@ -278,6 +278,8 @@ if eyelink_ver > 2:
     el_tracker.sendCommand("sample_rate 500")
 # Choose a calibration type, H3, HV3, HV5, HV13 (HV = horizontal/vertical),
 el_tracker.sendCommand("calibration_type = HV5")
+el_tracker.sendCommand("calibration_area_proportion = 0.6 0.6")
+el_tracker.sendCommand("validation_area_proportion = 0.6 0.6")
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
