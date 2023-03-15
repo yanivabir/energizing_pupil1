@@ -46,6 +46,7 @@ minimal_fixation_duration = 0.5
 minimum_fixation_proportion = 0.75
 fixation_distance_deg = 2 # 
 instructions_gap = 0.2
+rating_min_time = 1
 waiting_task_duration = 1*60 #40*60
 wait_durations = [3, 6, 9, 12]
 max_warnings = 5
@@ -165,10 +166,13 @@ presented with {n_categories} qustions. We would like you to rate your curiosity
 You will rate your curiosity on a scale of 
 1 - "Not curious at all"     to       5 - "Extremely curious",
     
+You will input your rating using the number keys on the keyboard. Next to them you will find a key marked "Know".
 If you are 100% confident that you know the answer to the question press 'Know' instead of rating your curiosity. Only use this option for questions you are absolutely sure you know the answer to.
+
 Press the space key to continue""",
     "cont_key": "space"},
     {"text_page":  """In this study we are interested in your own personal judgment. Therefore it is important that you rely only on your own knowledge and give your best answer "off the top of your head."
+
 Press the space key to begin this part of the experiment.""",
     "cont_key": "space"}
 ]
@@ -1548,12 +1552,15 @@ text = visual.TextStim(win=win, name='text',
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     depth=0.0);
+
+rating_choice = keyboard.Keyboard()
+
 slider = visual.Slider(win=win, name='slider',
-    startValue=None, size=(12.0, 1.0), pos=(0, -3.4), units='deg',
+    startValue=None, size=(12.0, 0.7), #pos=(0, -3.4),
     labels=("Know", "1", "2", "3", "4", "5"), ticks=(0, 1, 2, 3, 4, 5), granularity=1.0,
     style='rating', styleTweaks=(), opacity=None,
     labelColor='LightGray', markerColor='Blue', lineColor='White', colorSpace='rgb',
-    font='Open Sans', labelHeight=1.0,
+    font='Open Sans', labelHeight=0.7,
     flip=False, ori=0.0, depth=-1, readOnly=False)
 
 
@@ -1747,10 +1754,20 @@ for thisRating_trial in rating_trials:
     continueRoutine = True
     routineForceEnded = False
     # update component parameters for each repeat
-    text.setText("How curious are you to know: \n\n" + question_text + "\n\n\n")
-    slider.reset()
+    text.setText(f"""How curious are you to know: 
+    
+    {question_text}
+    
+
+
+    
+    1 - not at all      2       3       4       5 - extremely curious""")
+    rating_choice.keys = []
+    rating_choice.rt = []
+    _rating_choice_allKeys = []
+
     # keep track of which components have finished
-    ratingComponents = [text, slider]
+    ratingComponents = [text, rating_choice]
     for thisComponent in ratingComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -1783,20 +1800,29 @@ for thisRating_trial in rating_trials:
             thisExp.timestampOnFlip(win, 'text.started')
             text.setAutoDraw(True)
         
-        # *slider* updates
-        if slider.status == NOT_STARTED and tThisFlip >= instructions_gap-frameTolerance:
+        # *choice* updates
+        waitOnFlip = False
+        if rating_choice.status == NOT_STARTED and tThisFlip >= rating_min_time-frameTolerance:
             # keep track of start time/frame for later
-            slider.frameNStart = frameN  # exact frame index
-            slider.tStart = t  # local t and not account for scr refresh
-            slider.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(slider, 'tStartRefresh')  # time at next scr refresh
+            rating_choice.frameNStart = frameN  # exact frame index
+            rating_choice.tStart = t  # local t and not account for scr refresh
+            rating_choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(rating_choice, 'tStartRefresh')  # time at next scr refresh
             # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'slider.started')
-            slider.setAutoDraw(True)
-        
-        # Check slider for response to end routine
-        if slider.getRating() is not None and slider.status == STARTED:
-            continueRoutine = False
+            thisExp.timestampOnFlip(win, 'rating_choice.started')
+            rating_choice.status = STARTED
+            # keyboard checking is just starting
+            waitOnFlip = True
+            win.callOnFlip(rating_choice.clock.reset)  # t=0 on next screen flip
+            win.callOnFlip(rating_choice.clearEvents, eventType='keyboard')  # clear events on next screen flip
+        if rating_choice.status == STARTED and not waitOnFlip:
+            theseKeys = rating_choice.getKeys(keyList=["grave","1", "2", "3", "4", "5"], waitRelease=False)
+            _rating_choice_allKeys.extend(theseKeys)
+            if len(_rating_choice_allKeys):
+                rating_choice.keys = _rating_choice_allKeys[-1].name  # just the last key pressed
+                rating_choice.rt = _rating_choice_allKeys[-1].rt
+                # a response ends the routine
+                continueRoutine = False
         
         # check for quit (typically the Esc key)
         if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
@@ -1820,8 +1846,11 @@ for thisRating_trial in rating_trials:
     for thisComponent in ratingComponents:
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
-    rating_trials.addData('slider.response', slider.getRating())
-    rating_trials.addData('slider.rt', slider.getRT())
+    if rating_choice.keys in ['', [], None]:  # No response was made
+        rating_choice.keys = None
+    thisExp.addData('rating_choice.keys',rating_choice.keys)
+    if rating_choice.keys != None:  # we had a response
+        thisExp.addData('rating_choice.rt', rating_choice.rt)
     # the Routine "rating" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()
     thisExp.nextEntry()
