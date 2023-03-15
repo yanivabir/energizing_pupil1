@@ -20,6 +20,8 @@ from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 from psychopy.tools.monitorunittools import deg2pix
 
+import time
+
 import pylink
 from EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
@@ -48,10 +50,15 @@ waiting_task_duration = 1*60 #40*60
 wait_durations = [3, 6, 9, 12]
 max_warnings = 5
 
+results_folder = 'data/et/'
+if not os.path.exists(results_folder):
+    os.makedirs(results_folder)
+
+
 n_for_ratings_per_category = 8
 
 # Set this variable to True to run the script in eyetracking "Dummy Mode"
-dummy_mode = True
+dummy_mode = False
 
 # --- Draw questions for rating ---
 # Import questios
@@ -184,8 +191,21 @@ expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
 expInfo['psychopyVersion'] = psychopyVersion
 
+edf_fname = expInfo['participant']
+
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
 filename = _thisDir + os.sep + u'data/%s_%s_%s' % (expInfo['participant'], expName, expInfo['date'])
+
+# We download EDF data file from the EyeLink Host PC to the local hard
+# drive at the end of each testing session, here we rename the EDF to
+# include session start date/time
+time_str = time.strftime("_%Y_%m_%d_%H_%M", time.localtime())
+session_identifier = edf_fname + time_str
+
+# create a folder for the current testing session in the "results" folder
+session_folder = os.path.join(results_folder, session_identifier)
+if not os.path.exists(session_folder):
+    os.makedirs(session_folder)
 
 # Step 1: Connect to the EyeLink Host PC
 #
@@ -251,7 +271,7 @@ el_tracker.sendCommand("link_sample_data = %s" % link_sample_flags)
 # Optional tracking parameters
 # Sample rate, 250, 500, 1000, or 2000, check your tracker specification
 if eyelink_ver > 2:
-    el_tracker.sendCommand("sample_rate 1000")
+    el_tracker.sendCommand("sample_rate 500")
 # Choose a calibration type, H3, HV3, HV5, HV13 (HV = horizontal/vertical),
 el_tracker.sendCommand("calibration_type = HV9")
 
@@ -280,10 +300,73 @@ win = visual.Window(
     winType='pyglet', allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True, 
-    units='deg')
+    units='pix')
 scn_width, scn_height = win.size
 
-win.mouseVisible = True
+# Pass the display pixel coordinates (left, top, right, bottom) to the tracker
+# see the EyeLink Installation Guide, "Customizing Screen Settings"
+el_coords = "screen_pixel_coords = 0 0 %d %d" % (scn_width - 1, scn_height - 1)
+el_tracker.sendCommand(el_coords)
+
+# Write a DISPLAY_COORDS message to the EDF file
+# Data Viewer needs this piece of info for proper visualization, see Data
+# Viewer User Manual, "Protocol for EyeLink Data to Viewer Integration"
+dv_coords = "DISPLAY_COORDS  0 0 %d %d" % (scn_width - 1, scn_height - 1)
+el_tracker.sendMessage(dv_coords)
+
+# Configure a graphics environment (genv) for tracker calibration
+genv = EyeLinkCoreGraphicsPsychoPy(el_tracker, win)
+print(genv)  # print out the version number of the CoreGraphics library
+
+# Set background and foreground colors for the calibration target
+# in PsychoPy, (-1, -1, -1)=black, (1, 1, 1)=white, (0, 0, 0)=mid-gray
+foreground_color = (-1, -1, -1)
+background_color = win.color
+genv.setCalibrationColors(foreground_color, background_color)
+
+# Set up the calibration target
+#
+# The target could be a "circle" (default), a "picture", a "movie" clip,
+# or a rotating "spiral". To configure the type of calibration target, set
+# genv.setTargetType to "circle", "picture", "movie", or "spiral", e.g.,
+# genv.setTargetType('picture')
+#
+# Use gen.setPictureTarget() to set a "picture" target
+# genv.setPictureTarget(os.path.join('images', 'fixTarget.bmp'))
+#
+# Use genv.setMovieTarget() to set a "movie" target
+# genv.setMovieTarget(os.path.join('videos', 'calibVid.mov'))
+
+# Use the default calibration target ('circle')
+genv.setTargetType('circle')
+
+# Configure the size of the calibration target (in pixels)
+# this option applies only to "circle" and "spiral" targets
+genv.setTargetSize(24)
+
+# Beeps to play during calibration, validation and drift correction
+# parameters: target, good, error
+#     target -- sound to play when target moves
+#     good -- sound to play on successful operation
+#     error -- sound to play on failure or interruption
+# Each parameter could be ''--default sound, 'off'--no sound, or a wav file
+genv.setCalibrationSounds('', '', '')
+
+# Request Pylink to use the PsychoPy window we opened above for calibration
+pylink.openGraphicsEx(genv)
+
+if not dummy_mode:
+    try:
+        el_tracker.doTrackerSetup()
+    except RuntimeError as err:
+        print('ERROR:', err)
+        el_tracker.exitCalibration()
+
+if dummy_mode:
+    win.mouseVisible = True
+else:
+    win.mouseVisible = True
+
 # store frame rate of monitor if we can measure it
 expInfo['frameRate'] = win.getActualFrameRate()
 if expInfo['frameRate'] != None:
@@ -301,7 +384,7 @@ defaultKeyboard = keyboard.Keyboard(backend='ptb')
 instr_max_component = max([len(t["text_page"]) for t in instr1_text + instr2_text if type(t["text_page"]) is list])
 text_instr = [visual.TextStim(win=win, name=f'text_instr_{t}',
     font='Arial',
-    pos=(0, 0), height=0.7, wrapWidth=24, ori=0.0, 
+    pos=(0, 0), height=deg2pix(0.7,mon), wrapWidth=deg2pix(24,mon), ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     alignText='left',
