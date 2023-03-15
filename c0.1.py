@@ -1452,13 +1452,19 @@ for thisWaiting_trial in waiting_trials:
 
     run_fixate(waiting_trials)
     
-    run_question(waiting_trials)
+    q_sum_in_region, q_frameN = run_question(practice2_trials)
 
     warning_counter = display_deadline_warning(warning_counter)
 
     warning_counter = display_call_experimenter(warning_counter)
     
-    run_answer(waiting_trials, thisTrialDuration)
+    a_sum_in_region, a_frameN = run_answer(practice2_trials, thisTrialDuration)
+
+    print((q_sum_in_region + a_sum_in_region) / (q_frameN + a_frameN))
+    if (q_sum_in_region + a_sum_in_region) / (q_frameN + a_frameN) < minimum_fixation_proportion:
+        warning_counter = display_fixation_warning(warning_counter)
+
+        warning_counter = display_call_experimenter(warning_counter)
 
     thisExp.nextEntry()    
 # completed 1.0 repeats of 'waiting_trials'
